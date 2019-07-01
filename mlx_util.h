@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 21:19:41 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/06/30 21:54:49 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/01 12:16:32 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,9 @@
 # define MLX void
 # define MLX_WIN void
 # define MLX_IMG void
-# define byte unsigned char
+typedef unsigned char	byte;
 
-# define BPP 24
+# define BPP 0
 # define MACOS_ENDIAN 0
 
 typedef struct	s_screen
