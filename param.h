@@ -6,21 +6,15 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 12:38:59 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/01 16:30:20 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 12:31:31 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARAM_H
 # define PARAM_H
 
+# include "map.h"
 # include "quaternion.h"
-
-typedef struct	s_world
-{
-	int			width;
-	int			height;
-	// TODO
-}				t_world;
 
 typedef struct	s_camera
 {
@@ -32,7 +26,7 @@ typedef struct	s_camera
 
 typedef struct	s_param
 {
-	t_world		*world;
+	t_map		*world;
 	t_screen	*screen;
 	t_camera	*camera;
 	int			camera_updated;

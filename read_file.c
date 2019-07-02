@@ -6,17 +6,17 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 20:36:57 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/01 22:10:34 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 12:23:41 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
-#include <fcntl.h>
 
 #include "map.h"
 #include "vertex.h"
 #include "libft/libft.h"
 
+/*
 static void	free_map(t_map *map)
 {
 	for (int i = 0; i < map->height; i++)
@@ -28,6 +28,7 @@ static void	free_map(t_map *map)
 	free(map->data);
 	free(map);
 }
+*/
 
 /*
 ** I'm being naughty and not freeing memory on every malloc failure, but don't
@@ -85,7 +86,7 @@ static int	read_map_row(int fd, t_map *map)
 	return (1);
 }
 
-static t_map	*read_map(int fd)
+t_map	*read_map(int fd)
 {
 	t_map *map;
 	int status;
@@ -103,37 +104,5 @@ static t_map	*read_map(int fd)
 			return (NULL);
 		else if (status == 0)
 			return (map);
-	}
-}
-
-void	fdf(t_map *map)
-{
-	// TODO
-}
-
-int main(int argc, char **argv)
-{
-	int fd;
-	t_map *map;
-
-	if (argc != 2)
-	{
-		write(1, "usage: ./fdf source_file\n", 25);
-		exit(1);
-	}
-	else
-	{
-		fd = open(argv[1], O_RDONLY);
-		if (fd == -1)
-		{
-			write(1, "ERROR\n", 6);
-			exit(1);
-		}
-		t_map *map = read_map(fd);
-		close(fd);
-		if (map == NULL)
-			exit(1);
-		else
-			fdf(map);
 	}
 }

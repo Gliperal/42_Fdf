@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:48 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/01 21:41:48 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 13:17:49 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,5 +22,9 @@ typedef struct	s_matrix
 	t_vertex	*z;
 	t_vertex	*w;
 }				t_matrix;
+
+t_matrix	*matrix_new(t_vertex *col1, t_vertex *col2, t_vertex *col3, t_vertex *col4);
+t_vertex	*transform_vertex(t_matrix *matrix, t_vertex *vertex);
+t_matrix	*matrix_multiply(t_matrix *m1, t_matrix *m2);
 
 #endif

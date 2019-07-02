@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/01 21:47:40 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 13:19:21 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ t_matrix	*matrix_new(t_vertex *col1, t_vertex *col2, t_vertex *col3, t_vertex *c
 	return (result);
 }
 
+/*
 #include <stdio.h>
 int main()
 {
@@ -94,3 +95,4 @@ int main()
 	t_vertex *v4 = transform_vertex(m3, v);
 	printf("%f, %f, %f, %f\n", v4->x, v4->y, v4->z, v4->w);
 }
+*/

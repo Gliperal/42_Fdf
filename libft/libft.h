@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/01 11:45:30 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/01 21:45:08 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 16:14:15 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,5 +140,11 @@ int					get_next_line(const int fd, char **line);
 
 int					ft_printf(const char *format, ...);
 char				*ft_strprintf(const char *format, ...);
+
+typedef struct		s_point
+{
+	int				x;
+	int				y;
+}					t_point;
 
 #endif
