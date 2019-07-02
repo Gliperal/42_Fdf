@@ -1,26 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   matrix.h                                           :+:      :+:    :+:   */
+/*   ft_iswhite.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/07/01 18:12:48 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/01 21:41:48 by nwhitlow         ###   ########.fr       */
+/*   Created: 2019/07/01 21:44:09 by nwhitlow          #+#    #+#             */
+/*   Updated: 2019/07/01 21:44:26 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MATRIX_H
-# define MATRIX_H
-
-# include "vertex.h"
-
-typedef struct	s_matrix
+int	ft_iswhite(char c)
 {
-	t_vertex	*x;
-	t_vertex	*y;
-	t_vertex	*z;
-	t_vertex	*w;
-}				t_matrix;
-
-#endif
+	if ((c == ' ') || (c == '\t'))
+		return (1);
+	if ((c == '\n') || (c == '\v'))
+		return (1);
+	if ((c == '\r') || (c == '\f'))
+		return (1);
+	return (0);
+}

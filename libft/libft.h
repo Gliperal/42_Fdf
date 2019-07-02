@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/01 11:45:30 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/06/08 15:21:54 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/01 21:45:08 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ unsigned int		ft_right_rotate(unsigned int n, int dist);
 void				ft_putstr_upper(char const *s);
 void				ft_putstr_lower(char const *s);
 int					ft_strchri(const void *s, int c);
+int					ft_iswhite(char c);
 
 typedef struct		s_arrlst
 {

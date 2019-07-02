@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/01 20:10:50 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/01 21:47:40 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,40 +14,6 @@
 
 #include "matrix.h"
 
-t_vertex	*vertex_new(float x, float y, float z, float w)
-{
-	t_vertex *v;
-
-	v = (t_vertex *)malloc(sizeof(t_vertex));
-	if (v == NULL)
-		return (NULL);
-	v->x = x;
-	v->y = y;
-	v->z = z;
-	v->w = w;
-	return (v);
-}
-
-t_vertex	*vertex_scale(t_vertex *vertex, float scale)
-{
-	return vertex_new(vertex->x * scale, vertex->y * scale, vertex->z * scale, vertex->w * scale);
-}
-
-t_vertex	*vertex_sum_four(t_vertex *v1, t_vertex *v2, t_vertex *v3, t_vertex *v4)
-{
-	t_vertex *v;
-
-	v = (t_vertex *)malloc(sizeof(t_vertex));
-	if (v == NULL)
-		return (NULL);
-	v->x = v1->x + v2->x + v3->x + v4->x;
-	v->y = v1->y + v2->y + v3->y + v4->y;
-	v->z = v1->z + v2->z + v3->z + v4->z;
-	v->w = v1->w + v2->w + v3->w + v4->w;
-	return (v);
-}
-
-#include <stdio.h>
 t_vertex	*transform_vertex(t_matrix *matrix, t_vertex *vertex)
 {
 	t_vertex *result;
@@ -60,11 +26,7 @@ t_vertex	*transform_vertex(t_matrix *matrix, t_vertex *vertex)
 	col2 = vertex_scale(matrix->y, vertex->y);
 	col3 = vertex_scale(matrix->z, vertex->z);
 	col4 = vertex_scale(matrix->w, vertex->w);
-/*	printf("%f, %f, %f, %f\n", col1->x, col1->y, col1->z, col1->w);
-	printf("%f, %f, %f, %f\n", col2->x, col2->y, col2->z, col2->w);
-	printf("%f, %f, %f, %f\n", col3->x, col3->y, col3->z, col3->w);
-	printf("%f, %f, %f, %f\n", col4->x, col4->y, col4->z, col4->w);
-*/	result = NULL;
+	result = NULL;
 	if (col1 && col2 && col3 && col4)
 		result = vertex_sum_four(col1, col2, col3, col4);
 	free(col1);
@@ -108,6 +70,7 @@ t_matrix	*matrix_new(t_vertex *col1, t_vertex *col2, t_vertex *col3, t_vertex *c
 	return (result);
 }
 
+#include <stdio.h>
 int main()
 {
 	t_vertex *v = vertex_new(10, 20, 30, 1);
