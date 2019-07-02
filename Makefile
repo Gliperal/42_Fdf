@@ -8,6 +8,7 @@ RM=rm -rf
 NAME=fdf
 
 vpath libmlx.a $(LIBMLX)
+vpath libft.a libft
 
 $(NAME): $(OBJS) -lmlx
 	$(CC) $(OBJS) -L $(LIBMLX) -lmlx $(FRAMEWORKS) -o $(NAME)
@@ -18,9 +19,11 @@ all: $(NAME)
 
 clean:
 	$(RM) $(OBJS)
+	make -C libft clean
 
 fclean: clean
 	$(RM) $(NAME)
+	make -C libft fclean
 	make -C $(LIBMLX) clean
 
 re: fclean all
