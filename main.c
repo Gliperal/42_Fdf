@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 12:50:09 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 13:23:16 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@ void	free_map(t_map *map)
 	free(map);
 }
 
-void	test_print(t_vertex *old, t_vertex *new)
+void	vertex_print(t_vertex *v)
 {
-	ft_printf("\t(%.2f, %.2f, %.2f, %.2f) -> (%.2f, %.2f, %.2f, %.2f)\n", old->x, old->y, old->z, old->w, new->x, new->y, new->z, new->w);
+	ft_printf("(%.2f, %.2f, %.2f, %.2f)", v->x, v->y, v->z, v->w);
 }
 
 # define SCREEN_WIDTH 1280

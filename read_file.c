@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 20:36:57 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 21:27:01 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 13:04:29 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ static int	read_map_row(int fd, t_map *map)
 			return (-1);
 		ft_memcpy(row, tmp, row_size * sizeof(t_vertex *));
 		free(tmp);
-		t_vertex *v = vertex_new(row_size, map->height, ft_pop_atoi(line + i), 1);
+		t_vertex *v = vertex_new(row_size, map->height, 0 - ft_pop_atoi(line + i), 1);
 		row[row_size] = v;
 		row_size++;
 	}

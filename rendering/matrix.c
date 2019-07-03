@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 12:27:00 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 13:01:03 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,29 @@ t_matrix	*opengl_projection_matrix(float fov, float n, float f, float ar)
 	free(cols[3]);
 	free(m_proj);
 	return (NULL);
+}
+
+t_matrix	*translate_matrix(t_vertex *anti_offset)
+{
+	t_vertex *cols[4];
+
+	if (anti_offset == NULL)
+		return (NULL);
+	cols[0] = vertex_new(1, 0, 0, 0);
+	cols[1] = vertex_new(0, 1, 0, 0);
+	cols[2] = vertex_new(0, 0, 1, 0);
+	cols[3] = vertex_opposite(anti_offset);
+	if (!cols[0] || !cols[1] || !cols[2] || !cols[3])
+	{
+		free(cols[0]);
+		free(cols[1]);
+		free(cols[2]);
+		free(cols[3]);
+		return (NULL);
+	}
+	cols[3]->w = 1;
+	t_matrix *m_translate = matrix_new(cols[0], cols[1], cols[2], cols[3]);
+	return (m_translate);
 }
 
 void	matrix_print(t_matrix *matrix)
