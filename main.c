@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 12:26:22 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 12:40:57 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ t_map	*transform_map_to_ndc(t_map *map, t_camera *camera)
 		for (int x = 0; x < new->width; x++)
 		{
 			new->data[y][x] = camera_vertex_to_clip(camera, map->data[y][x]);
+//			test_print(map->data[y][x], new->data[y][x]);
 			if (!new->data[y][x])
 				return (NULL);
 			// TODO perform clipping
@@ -66,12 +67,20 @@ t_map	*transform_map_to_ndc(t_map *map, t_camera *camera)
 			new->data[y][x]->x = new->data[y][x]->x / new->data[y][x]->w;
 			new->data[y][x]->y = new->data[y][x]->y / new->data[y][x]->w;
 			new->data[y][x]->z = new->data[y][x]->z / new->data[y][x]->w;
-			// NDC coordinates to screen coordinates
-			float half_width = SCREEN_WIDTH / 2;
-			float half_height = SCREEN_HEIGHT / 2;
-			new->data[y][x]->x = new->data[y][x]->x * half_width + half_width;
-			new->data[y][x]->y = new->data[y][x]->y * half_height + half_height;
-//			test_print(map->data[y][x], new->data[y][x]);
+			if (new->data[y][x]->z < -1 || new->data[y][x]->z > 1)
+			{
+				free(new->data[y][x]);
+				new->data[y][x] = NULL;
+			}
+			else
+			{
+				// NDC coordinates to screen coordinates
+				float half_width = SCREEN_WIDTH / 2;
+				float half_height = SCREEN_HEIGHT / 2;
+				new->data[y][x]->x = new->data[y][x]->x * half_width + half_width;
+				new->data[y][x]->y = new->data[y][x]->y * half_height + half_height;
+//				test_print(map->data[y][x], new->data[y][x]);
+			}
 		}
 	}
 	return (new);
@@ -90,11 +99,15 @@ void	put_map_to_screen(t_map *map, t_screen *screen)
 		for (int x = 0; x < map->width; x++)
 		{
 			src = map->data[y][x];
+			if (src == NULL)
+				continue;
 			psrc.x = (int) src->x;
 			psrc.y = (int) src->y;
 			if (y > 0)
 			{
 				dst = map->data[y - 1][x];
+				if (dst == NULL)
+					continue;
 				pdst.x = (int) dst->x;
 				pdst.y = (int) dst->y;
 				ft_draw_line(screen, psrc, pdst, 0x0088CCFF);
@@ -102,6 +115,8 @@ void	put_map_to_screen(t_map *map, t_screen *screen)
 			if (x > 0)
 			{
 				dst = map->data[y][x - 1];
+				if (dst == NULL)
+					continue;
 				pdst.x = (int) dst->x;
 				pdst.y = (int) dst->y;
 				ft_draw_line(screen, psrc, pdst, 0x00FFCC88);
