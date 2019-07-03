@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 16:26:28 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 18:47:01 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ t_map	*transform_map_to_ndc(t_matrix *matrix, t_map *map)
 			if (!new->data[y][x])
 				return (NULL);
 			// TODO perform clipping
+			test_print(map->data[y][x], new->data[y][x]);
 			// clip coordinates to NDC coordinates
 			new->data[y][x]->x = new->data[y][x]->x / new->data[y][x]->w;
 			new->data[y][x]->y = new->data[y][x]->y / new->data[y][x]->w;
@@ -137,31 +138,45 @@ void	redraw(t_param *param)
 		vertex_new(0, 0, 1, 0),
 		vertex_new(0, 0, 10, 1)
 	);
-	t_matrix *m_rotate = matrix_new( // (rotate view 15 degrees up)
-		vertex_new(1, 0, 0, 0),
-		vertex_new(0, 0.9659, -0.2588, 0),
-		vertex_new(0, 0.2588, 0.9659, 0),
+	float s = param->camera->rotation->s;
+	float i = param->camera->rotation->i;
+	float j = param->camera->rotation->j;
+	float k = param->camera->rotation->k;
+	// Quaternion rotation to matrix rotation
+	t_matrix *m_rotate = matrix_new(
+		vertex_new(1 - 2 * (j * j + k * k), 2 * (i * j + k * s), 2 * (i * k - j * s), 0),
+		vertex_new(2 * (i * j - k * s), 1 - 2 * (i * i + k * k), 2 * (j * k + i * s), 0),
+		vertex_new(2 * (i * k + j * s), 2 * (j * k - i * s), 1 - 2 * (i * i + j * j), 0),
 		vertex_new(0, 0, 0, 1)
 	);
-	float fov = 90;
-	float n = -1;
-	float f = -42;
+	float fov = 60;
+	ft_printf("fov = %f\n", fov);
+	float n = 1;
+	ft_printf("n = %f\n", n);
+	float f = 42;
+	ft_printf("f = %f\n", f);
 	float scale = tan(fov * 0.5 * M_PI / 180) * n;
-	float ar = SCREEN_WIDTH / SCREEN_HEIGHT;
+	ft_printf("scale = %f\n", scale);
+	float ar = (float) SCREEN_WIDTH / SCREEN_HEIGHT;
+	ft_printf("ar = %f\n", ar);
 	float r = ar * scale;
+	ft_printf("r = %f\n", r);
 	float l = 0 - r;
-	float t = scale;
-	float b = 0 - t;
+	ft_printf("l = %f\n", l);
+	float b = scale;
+	ft_printf("b = %f\n", b);
+	float t = 0 - b;
+	ft_printf("t = %f\n", t);
 	float m1 = 2 * n / (r - l);
-	float m2 = 2 * n / (t - b);
+	float m2 = 2 * n / (b - t);
 	float m3 = (r + l) / (r - l);
-	float m4 = (t + b) / (t - b);
-	float m5 = 0 - (f + n) / (f - n);
+	float m4 = (b + t) / (b - t);
+	float m5 = (f + n) / (f - n);
 	float m6 = 0 - 2 * f * n / (f - n);
 	t_matrix *m_proj = matrix_new(
 		vertex_new(m1, 0, 0, 0),
 		vertex_new(0, m2, 0, 0),
-		vertex_new(m3, m4, m5, -1),
+		vertex_new(m3, m4, m5, 1),
 		vertex_new(0, 0, m6, 0)
 	);
 	test_print_matrix(m_proj);
@@ -225,16 +240,16 @@ void	camera_rotate(t_camera *camera, int x, int y)
 	float siny;
 
 	angx = (float) x / 10 * (M_PI / 180);
-	angy = (float) y / 10 * (M_PI / 180);
+	angy = (float) (0 - y) / 10 * (M_PI / 180);
 	cosx = cos(angx);
 	sinx = sin(angx);
 	cosy = cos(angy);
 	siny = sin(angy);
 	rot.s = cosx * cosy;
-	rot.i = sinx * siny;
-	rot.j = cosx * siny;
-	rot.k = sinx * cosy;
-	quaternion_right_multiply(camera->rotation, &rot);
+	rot.i = cosx * siny;
+	rot.j = sinx * cosy;
+	rot.k = sinx * siny;
+	quaternion_left_multiply(camera->rotation, &rot);
 }
 
 int handle_mouse_move(int x, int y, t_param *param)
