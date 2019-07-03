@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 12:40:57 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 12:50:09 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,9 +139,9 @@ void	render(t_param *param)
 	if (param->camera->updated)
 		redraw(param);
 	mlx_put_image_to_window(screen->mlx_ptr, screen->win_ptr, screen->img_ptr, 0, 0);
-	t_quat *pos = param->camera->position;
+	t_vertex *pos = param->camera->position;
 	t_quat *rot = param->camera->rotation;
-	char *str = ft_strprintf("Camera: %+.2f, %+.2f, %+.2f (%+.2f + %+.2fi + %+.2fj + %+.2fk)", pos->i, pos->j, pos->k, rot->s, rot->i, rot->j, rot->k);
+	char *str = ft_strprintf("Camera: %+.2f, %+.2f, %+.2f (%+.2f + %+.2fi + %+.2fj + %+.2fk)", pos->x, pos->y, pos->z, rot->s, rot->i, rot->j, rot->k);
 	mlx_string_put(screen->mlx_ptr, screen->win_ptr, 0, 0, 0xFFFFFF, str);
 	free(str);
 }

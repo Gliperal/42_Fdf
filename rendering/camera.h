@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 12:05:59 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 12:16:57 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 12:49:18 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ typedef struct	s_camera
 	float		n;
 	float		f;
 	float		ar;
-	t_quat		*position;
+	t_vertex	*position;
 	t_quat		*rotation;
 	t_matrix	*clip_matrix;
 	int			updated;

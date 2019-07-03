@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 11:33:26 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 12:27:13 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 12:52:45 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void	update_matrix(t_camera *camera)
 	cols[0] = vertex_new(1, 0, 0, 0);
 	cols[1] = vertex_new(0, 1, 0, 0);
 	cols[2] = vertex_new(0, 0, 1, 0);
-	cols[3] = vertex_new(0, 0, 20, 1);
+	cols[3] = vertex_opposite(camera->position);
 	if (!cols[0] || !cols[1] || !cols[2] || !cols[3])
 	{
 		free(cols[0]);
@@ -31,6 +31,7 @@ static void	update_matrix(t_camera *camera)
 		return ;
 	}
 	t_matrix *m_translate = matrix_new(cols[0], cols[1], cols[2], cols[3]);
+	matrix_print(m_translate);
 	t_matrix *m_rotate = quaternion_to_matrix(camera->rotation);
 	t_matrix *m_proj = opengl_projection_matrix(camera->fov, camera->n, camera->f, camera->ar);
 	t_matrix *m_trtt = matrix_multiply(m_rotate, m_translate);
@@ -59,7 +60,7 @@ t_camera	*camera_new(float fov, float n, float f, float ar)
 	if (camera == NULL)
 		return (NULL);
 	camera->rotation = quaternion_new(1, 0, 0, 0);
-	camera->position = quaternion_new(-20, 0, 0, 0);
+	camera->position = vertex_new(-20, 0, 0, 0);
 	if (camera->rotation == NULL || camera->position == NULL)
 	{
 		free(camera->position);

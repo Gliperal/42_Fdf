@@ -42,6 +42,11 @@ libft/libft.a:
 rendering/librendering.a:
 	make -C $(LIBRENDERING)
 
+libs:
+	make -C $(LIBMLX)
+	make -C $(LIBFT)
+	make -C $(LIBRENDERING)
+
 fdf.o: map.h
 read_file.o: map.h -lrendering -lft
 main.o: main.c -lrendering
