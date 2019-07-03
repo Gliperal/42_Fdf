@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 13:01:03 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 15:53:16 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,8 @@ void	matrix_print(t_matrix *matrix)
 	t_vertex *v3;
 	t_vertex *v4;
 
+	if (matrix == NULL)
+		ft_putstr("[NULL]\n");
 	v1 = matrix->x;
 	v2 = matrix->y;
 	v3 = matrix->z;

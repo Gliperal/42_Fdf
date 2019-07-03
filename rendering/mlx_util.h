@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 21:19:41 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 22:04:53 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 14:29:07 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@
 # define CTRL 256
 # define SHIFT 257
 # define RSHIFT 258
+
+# define MAX_BUTTONS 124
 
 # define MLX void
 # define MLX_WIN void

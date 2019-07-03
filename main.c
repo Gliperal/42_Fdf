@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 13:23:16 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 15:56:57 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,13 @@ t_map	*transform_map_to_ndc(t_map *map, t_camera *camera)
 		for (int x = 0; x < new->width; x++)
 		{
 			new->data[y][x] = camera_vertex_to_clip(camera, map->data[y][x]);
-//			test_print(map->data[y][x], new->data[y][x]);
+			// perform clipping
 			if (!new->data[y][x])
 				return (NULL);
-			// TODO perform clipping
-//			test_print(map->data[y][x], new->data[y][x]);
+			vertex_print(map->data[y][x]);
+			ft_printf(" -> ");
+			vertex_print(new->data[y][x]);
+			ft_printf("\n");
 			// clip coordinates to NDC coordinates
 			new->data[y][x]->x = new->data[y][x]->x / new->data[y][x]->w;
 			new->data[y][x]->y = new->data[y][x]->y / new->data[y][x]->w;
@@ -79,7 +81,6 @@ t_map	*transform_map_to_ndc(t_map *map, t_camera *camera)
 				float half_height = SCREEN_HEIGHT / 2;
 				new->data[y][x]->x = new->data[y][x]->x * half_width + half_width;
 				new->data[y][x]->y = new->data[y][x]->y * half_height + half_height;
-//				test_print(map->data[y][x], new->data[y][x]);
 			}
 		}
 	}
@@ -93,7 +94,6 @@ void	put_map_to_screen(t_map *map, t_screen *screen)
 	t_point psrc;
 	t_point pdst;
 
-	// Clear image
 	ft_bzero(screen->data, screen->width * screen->height * screen->bpp / 8);
 	for (int y = 0; y < map->height; y++)
 		for (int x = 0; x < map->width; x++)
@@ -101,6 +101,7 @@ void	put_map_to_screen(t_map *map, t_screen *screen)
 			src = map->data[y][x];
 			if (src == NULL)
 				continue;
+			vertex_print(src);
 			psrc.x = (int) src->x;
 			psrc.y = (int) src->y;
 			if (y > 0)
@@ -146,86 +147,6 @@ void	render(t_param *param)
 	free(str);
 }
 
-int	handle_mouse_press(int button, int x, int y, t_param *param)
-{
-	if (button == LCLICK)
-		param->mouse1held = 1;
-	if (button == RCLICK)
-		param->mouse2held = 1;
-	param->mouse_x = x;
-	param->mouse_y = y;
-	return (0);
-}
-
-int	handle_mouse_release(int button, int x, int y, t_param *param)
-{
-	if (button == LCLICK)
-		param->mouse1held = 0;
-	if (button == RCLICK)
-		param->mouse2held = 0;
-	param->mouse_x = x;
-	param->mouse_y = y;
-	return (0);
-}
-
-#include <math.h>
-
-void	camera_rotate(t_camera *camera, int x, int y)
-{
-	t_quat rot;
-	float angx;
-	float angy;
-	float cosx;
-	float sinx;
-	float cosy;
-	float siny;
-
-	camera->updated = 1;
-	angx = (float) x / 10 * (M_PI / 180);
-	angy = (float) (0 - y) / 10 * (M_PI / 180);
-	cosx = cos(angx);
-	sinx = sin(angx);
-	cosy = cos(angy);
-	siny = sin(angy);
-	rot.s = cosx * cosy;
-	rot.i = cosx * siny;
-	rot.j = sinx * cosy;
-	rot.k = sinx * siny;
-	quaternion_left_multiply(camera->rotation, &rot);
-}
-
-int handle_mouse_move(int x, int y, t_param *param)
-{
-	if (param->mouse1held && (x != param->mouse_x || y != param->mouse_y))
-		camera_rotate(param->camera, x - param->mouse_x, y - param->mouse_y);
-	if (param->mouse2held)
-		ft_printf("Right mouse dragged %d,%d\n", x - param->mouse_x, y - param->mouse_y);
-	param->mouse_x = x;
-	param->mouse_y = y;
-	render(param);
-	return (0);
-}
-
-int	handle_key_press(int key, void *param)
-{
-	key = 0;
-	param = 0;
-	return 0;
-}
-
-int handle_key_release(int key, void *param)
-{
-	param = 0;
-	if (key == ESC)
-		exit (0);
-	return 0;
-}
-
-int	handle_exit()
-{
-	exit (0);
-}
-
 /*
 ** No mlx_destroy_ptr. Memory leaks abound :(
 */
@@ -263,26 +184,36 @@ void	do_exit(char *err, int exit_code)
 	exit(exit_code);
 }
 
+void	on_update(void *p)
+{
+	t_param *param;
+
+	param = (t_param *)p;
+	if (param->input->button_states[ESC] == RELEASED)
+		exit(0);
+	if (param->input->button_states[LCLICK] == HELD)
+		camera_rotate(param->camera, param->input->mouse_moved);
+	if (param->input->button_states[RCLICK] == HELD)
+		ft_printf("Right mouse dragged %d,%d\n", param->input->mouse_moved.x, param->input->mouse_moved.y);
+	render(param);
+}
+
 void	fdf(t_map *map)
 {
 	t_param *param = (t_param *)malloc(sizeof(t_param));
 	if (param == NULL)
 		do_exit("Param creation failed. Exiting...", 1);
-	param->mouse1held = 0;
-	param->mouse2held = 0;
 	t_screen *screen = new_screen(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello world!");
-	param->camera = camera_new(60, 1, 42, (float) SCREEN_WIDTH / SCREEN_HEIGHT);
-	if (screen == NULL || param->camera == NULL)
+	float far = ft_max(map->width, map->height) * 3;
+	param->camera = camera_new(60, 1, far, (float) screen->width / screen->height);
+	param->input = input_new(&on_update, param, screen->win_ptr);
+	if (screen == NULL || param->camera == NULL || param->input == NULL)
 		do_exit("Things creation failed. Exiting...", 1);
+	param->camera->position->x = 0;//map->width / 2;
+	param->camera->position->y = 0;//map->height / 2;
 	param->screen = screen;
 	param->world = map;
 	render(param);
 	mlx_do_key_autorepeatoff(screen->mlx_ptr);
-	mlx_hook(screen->win_ptr, 2, 0, &handle_key_press, NULL);
-	mlx_hook(screen->win_ptr, 3, 0, &handle_key_release, NULL);
-	mlx_hook(screen->win_ptr, 4, 0, &handle_mouse_press, param);
-	mlx_hook(screen->win_ptr, 5, 0, &handle_mouse_release, param);
-	mlx_hook(screen->win_ptr, 6, 0, &handle_mouse_move, param);
-	mlx_hook(screen->win_ptr, 17, 0, &handle_exit, NULL);
 	mlx_loop(screen->mlx_ptr);
 }

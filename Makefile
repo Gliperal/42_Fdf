@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -Werror
 FRAMEWORKS=-framework OpenGL -framework AppKit
-SRC=fdf.c main.c read_file.c
-OBJS=fdf.o main.o read_file.o
+SRC=fdf.c main.c read_file.c input.c
+OBJS=fdf.o main.o read_file.o input.o
 LIBMLX=minilibx_macos
 LIBFT=libft
 LIBRENDERING=rendering
@@ -49,5 +49,6 @@ libs:
 
 fdf.o: map.h
 read_file.o: map.h -lrendering -lft
+input.o: input.h -lrendering -lft
 main.o: main.c -lrendering
 	$(CC) $(CFLAGS) -I $(LIBMLX) -c main.c

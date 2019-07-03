@@ -6,11 +6,12 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 11:33:26 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 13:06:49 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 15:52:45 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include <math.h>
 
 #include "camera.h"
 
@@ -21,6 +22,11 @@ static void	update_matrix(t_camera *camera)
 	t_matrix *m_proj = opengl_projection_matrix(camera->fov, camera->n, camera->f, camera->ar);
 	t_matrix *m_trtt = matrix_multiply(m_rotate, m_translate);
 	t_matrix *m_prtrtt = matrix_multiply(m_proj, m_trtt);
+		matrix_print(m_translate);
+		matrix_print(m_rotate);
+		matrix_print(m_proj);
+		matrix_print(m_trtt);
+		matrix_print(m_prtrtt);
 	free(m_translate);
 	free(m_rotate);
 	free(m_proj);
@@ -59,4 +65,36 @@ t_camera	*camera_new(float fov, float n, float f, float ar)
 	camera->ar = ar;
 	camera->updated = 1;
 	return (camera);
+}
+
+void	camera_move(t_camera *camera, t_vertex *offset)
+{
+	camera = 0;
+	offset = 0;
+	// Rotate offset by camera angle
+	// Add to camera position
+}
+
+void	camera_rotate(t_camera *camera, t_point rotation)
+{
+	t_quat rot;
+	float angx;
+	float angy;
+	float cosx;
+	float sinx;
+	float cosy;
+	float siny;
+
+	camera->updated = 1;
+	angx = (float) rotation.x / 10 * (M_PI / 180);
+	angy = (float) (0 - rotation.y) / 10 * (M_PI / 180);
+	cosx = cos(angx);
+	sinx = sin(angx);
+	cosy = cos(angy);
+	siny = sin(angy);
+	rot.s = cosx * cosy;
+	rot.i = cosx * siny;
+	rot.j = sinx * cosy;
+	rot.k = sinx * siny;
+	quaternion_left_multiply(camera->rotation, &rot);
 }
