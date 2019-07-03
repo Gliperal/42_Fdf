@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 18:47:01 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 21:25:28 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,10 @@
 #include <unistd.h>
 
 #include "mlx.h"
-#include "mlx_util.h"
+#include "rendering/mlx_util.h"
+#include "rendering/rendering.h"
 #include "param.h"
-#include "quaternion.h"
 #include "libft/libft.h"
-
-#include "vertex.h"
-#include "matrix.h"
 #include "map.h"
 
 void	ft_draw_line(t_screen *screen, t_point src, t_point dst, int color);
@@ -42,12 +39,11 @@ void	test_print(t_vertex *old, t_vertex *new)
 	ft_printf("\t(%.2f, %.2f, %.2f, %.2f) -> (%.2f, %.2f, %.2f, %.2f)\n", old->x, old->y, old->z, old->w, new->x, new->y, new->z, new->w);
 }
 
-# define SCREEN_WIDTH 640
-# define SCREEN_HEIGHT 480
+# define SCREEN_WIDTH 1280
+# define SCREEN_HEIGHT 720
 
 t_map	*transform_map_to_ndc(t_matrix *matrix, t_map *map)
 {
-	ft_printf("TRANSFORM MAP\n");
 	t_map *new = (t_map *)malloc(sizeof(t_map));
 	if (!new)
 		return (NULL);
@@ -67,7 +63,7 @@ t_map	*transform_map_to_ndc(t_matrix *matrix, t_map *map)
 			if (!new->data[y][x])
 				return (NULL);
 			// TODO perform clipping
-			test_print(map->data[y][x], new->data[y][x]);
+//			test_print(map->data[y][x], new->data[y][x]);
 			// clip coordinates to NDC coordinates
 			new->data[y][x]->x = new->data[y][x]->x / new->data[y][x]->w;
 			new->data[y][x]->y = new->data[y][x]->y / new->data[y][x]->w;
@@ -77,7 +73,7 @@ t_map	*transform_map_to_ndc(t_matrix *matrix, t_map *map)
 			float half_height = SCREEN_HEIGHT / 2;
 			new->data[y][x]->x = new->data[y][x]->x * half_width + half_width;
 			new->data[y][x]->y = new->data[y][x]->y * half_height + half_height;
-			test_print(map->data[y][x], new->data[y][x]);
+//			test_print(map->data[y][x], new->data[y][x]);
 		}
 	}
 	return (new);
@@ -136,7 +132,7 @@ void	redraw(t_param *param)
 		vertex_new(1, 0, 0, 0),
 		vertex_new(0, 1, 0, 0),
 		vertex_new(0, 0, 1, 0),
-		vertex_new(0, 0, 10, 1)
+		vertex_new(0, 0, 20, 1)
 	);
 	float s = param->camera->rotation->s;
 	float i = param->camera->rotation->i;
@@ -150,23 +146,14 @@ void	redraw(t_param *param)
 		vertex_new(0, 0, 0, 1)
 	);
 	float fov = 60;
-	ft_printf("fov = %f\n", fov);
 	float n = 1;
-	ft_printf("n = %f\n", n);
 	float f = 42;
-	ft_printf("f = %f\n", f);
 	float scale = tan(fov * 0.5 * M_PI / 180) * n;
-	ft_printf("scale = %f\n", scale);
 	float ar = (float) SCREEN_WIDTH / SCREEN_HEIGHT;
-	ft_printf("ar = %f\n", ar);
 	float r = ar * scale;
-	ft_printf("r = %f\n", r);
 	float l = 0 - r;
-	ft_printf("l = %f\n", l);
 	float b = scale;
-	ft_printf("b = %f\n", b);
 	float t = 0 - b;
-	ft_printf("t = %f\n", t);
 	float m1 = 2 * n / (r - l);
 	float m2 = 2 * n / (b - t);
 	float m3 = (r + l) / (r - l);
@@ -179,7 +166,7 @@ void	redraw(t_param *param)
 		vertex_new(m3, m4, m5, 1),
 		vertex_new(0, 0, m6, 0)
 	);
-	test_print_matrix(m_proj);
+//	test_print_matrix(m_proj);
 	t_matrix *m_trtt = matrix_multiply(m_rotate, m_translate);
 	t_matrix *m_prtrtt = matrix_multiply(m_proj, m_trtt);
 	// TODO free things (matrices, vertices, etc.)
@@ -332,7 +319,7 @@ void	fdf(t_map *map)
 	param->mouse1held = 0;
 	param->mouse2held = 0;
 	param->camera_updated = 1;
-	t_screen *screen = new_screen(640, 480, "Hello world!");
+	t_screen *screen = new_screen(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello world!");
 	param->camera = (t_camera *)malloc(sizeof(t_camera));
 	if (screen == NULL || param->camera == NULL)
 		do_exit("Things creation failed. Exiting...", 1);

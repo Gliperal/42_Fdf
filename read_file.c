@@ -6,15 +6,15 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 20:36:57 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 12:23:41 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 21:27:01 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 
 #include "map.h"
-#include "vertex.h"
 #include "libft/libft.h"
+# include "rendering/rendering.h"
 
 /*
 static void	free_map(t_map *map)

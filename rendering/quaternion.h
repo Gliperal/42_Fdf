@@ -1,39 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   param.h                                            :+:      :+:    :+:   */
+/*   quaternion.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/07/01 12:38:59 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 21:25:02 by nwhitlow         ###   ########.fr       */
+/*   Created: 2019/07/01 16:27:13 by nwhitlow          #+#    #+#             */
+/*   Updated: 2019/07/02 21:10:58 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PARAM_H
-# define PARAM_H
+#ifndef QUATERNION_H
+# define QUATERNION_H
 
-# include "map.h"
-# include "rendering/rendering.h"
-
-typedef struct	s_camera
+typedef struct	s_quat
 {
-	int			x;
-	int			y;
-	int			z;
-	t_quat		*rotation;
-}				t_camera;
+	float		s;
+	float		i;
+	float		j;
+	float		k;
+}				t_quat;
 
-typedef struct	s_param
-{
-	t_map		*world;
-	t_screen	*screen;
-	t_camera	*camera;
-	int			camera_updated;
-	int			mouse_x;
-	int			mouse_y;
-	int			mouse1held;
-	int			mouse2held;
-}				t_param;
+t_quat			*quaternion_new(float s, float i, float j, float k);
+t_quat			*quaternion_multiply(t_quat *q1, t_quat *q2);
+void			quaternion_left_multiply(t_quat *multiplicand, t_quat *multiplier);
+void			quaternion_right_multiply(t_quat *multiplicand, t_quat *multiplier);
 
 #endif

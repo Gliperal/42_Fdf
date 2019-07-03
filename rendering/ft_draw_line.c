@@ -6,17 +6,21 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/02 16:09:11 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 16:31:37 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 21:19:58 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "mlx_util.h"
-#include "libft/libft.h"
+#include "../libft/libft.h"
 
 static void	screen_put(t_screen *screen, int x, int y, int color)
 {
 	int	offset;
 
+	if (x < 0 || x > screen->width)
+		return ;
+	if (y < 0 || y > screen->height)
+		return ;
 	// TODO Maybe change screen->data to integer array
 	offset = (screen->width * y + x) * screen->bpp / 8;
 	screen->data[offset + 0] = color & 0xff;
