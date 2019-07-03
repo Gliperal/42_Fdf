@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 21:25:28 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 22:00:18 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@
 #include "param.h"
 #include "libft/libft.h"
 #include "map.h"
-
-void	ft_draw_line(t_screen *screen, t_point src, t_point dst, int color);
 
 void	free_map(t_map *map)
 {
@@ -125,7 +123,6 @@ void	put_map_to_screen(t_map *map, t_screen *screen)
 		}
 }
 
-#include <math.h>
 void	redraw(t_param *param)
 {
 	t_matrix *m_translate = matrix_new(
@@ -134,42 +131,17 @@ void	redraw(t_param *param)
 		vertex_new(0, 0, 1, 0),
 		vertex_new(0, 0, 20, 1)
 	);
-	float s = param->camera->rotation->s;
-	float i = param->camera->rotation->i;
-	float j = param->camera->rotation->j;
-	float k = param->camera->rotation->k;
-	// Quaternion rotation to matrix rotation
-	t_matrix *m_rotate = matrix_new(
-		vertex_new(1 - 2 * (j * j + k * k), 2 * (i * j + k * s), 2 * (i * k - j * s), 0),
-		vertex_new(2 * (i * j - k * s), 1 - 2 * (i * i + k * k), 2 * (j * k + i * s), 0),
-		vertex_new(2 * (i * k + j * s), 2 * (j * k - i * s), 1 - 2 * (i * i + j * j), 0),
-		vertex_new(0, 0, 0, 1)
-	);
+	// TODO catch malloc
+	t_matrix *m_rotate = quaternion_to_matrix(param->camera->rotation);
+	// TODO catch malloc
 	float fov = 60;
 	float n = 1;
 	float f = 42;
-	float scale = tan(fov * 0.5 * M_PI / 180) * n;
 	float ar = (float) SCREEN_WIDTH / SCREEN_HEIGHT;
-	float r = ar * scale;
-	float l = 0 - r;
-	float b = scale;
-	float t = 0 - b;
-	float m1 = 2 * n / (r - l);
-	float m2 = 2 * n / (b - t);
-	float m3 = (r + l) / (r - l);
-	float m4 = (b + t) / (b - t);
-	float m5 = (f + n) / (f - n);
-	float m6 = 0 - 2 * f * n / (f - n);
-	t_matrix *m_proj = matrix_new(
-		vertex_new(m1, 0, 0, 0),
-		vertex_new(0, m2, 0, 0),
-		vertex_new(m3, m4, m5, 1),
-		vertex_new(0, 0, m6, 0)
-	);
-//	test_print_matrix(m_proj);
+	t_matrix *m_proj = opengl_projection_matrix(fov, n, f, ar);
 	t_matrix *m_trtt = matrix_multiply(m_rotate, m_translate);
 	t_matrix *m_prtrtt = matrix_multiply(m_proj, m_trtt);
-	// TODO free things (matrices, vertices, etc.)
+	// TODO free inbetween steps
 	t_map *transformed = transform_map_to_ndc(m_prtrtt, param->world);
 	put_map_to_screen(transformed, param->screen);
 	free_map(transformed);

@@ -6,11 +6,12 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 21:09:14 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 22:23:22 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include <math.h>
 
 #include "matrix.h"
 
@@ -56,7 +57,7 @@ t_matrix	*matrix_multiply(t_matrix *m1, t_matrix *m2)
 	return (NULL);
 }
 
-t_matrix	*matrix_new(t_vertex *col1, t_vertex *col2, t_vertex *col3, t_vertex *col4)
+t_matrix	*matrix_new(t_vtx *col1, t_vtx *col2, t_vtx *col3, t_vtx *col4)
 {
 	t_matrix *result;
 
@@ -71,28 +72,48 @@ t_matrix	*matrix_new(t_vertex *col1, t_vertex *col2, t_vertex *col3, t_vertex *c
 }
 
 /*
-#include <stdio.h>
-int main()
-{
-	t_vertex *v = vertex_new(10, 20, 30, 1);
-	t_matrix *m1 = matrix_new(
-		vertex_new(0.6, 0, 0.8, 0),
-		vertex_new(0, 1, 0, 0),
-		vertex_new(-0.8, 0, 0.6, 0),
-		vertex_new(0, 0, 0, 1)
-	);
-	t_matrix *m2 = matrix_new(
-		vertex_new(1, 0, 0, 0),
-		vertex_new(0, 1, 0, 0),
-		vertex_new(0, 0, 1, 0),
-		vertex_new(1.2, 3.4, 4.5, 1)
-	);
-	t_vertex *v2 = transform_vertex(m1, v);
-	printf("%f, %f, %f, %f\n", v2->x, v2->y, v2->z, v2->w);
-	t_vertex *v3 = transform_vertex(m2, v2);
-	printf("%f, %f, %f, %f\n", v3->x, v3->y, v3->z, v3->w);
-	t_matrix *m3 = matrix_multiply(m2, m1);
-	t_vertex *v4 = transform_vertex(m3, v);
-	printf("%f, %f, %f, %f\n", v4->x, v4->y, v4->z, v4->w);
-}
+** t_matrix	*opengl_projection_matrix_advanced(float fov, \
+** float n, float f, float aspect_ratio)
+** {
+** 	float scale = tan(fov * 0.5 * M_PI / 180) * n;
+** 	float r = aspect_ratio * scale;
+** 	float l = 0 - r;
+** 	float b = scale;
+** 	float t = 0 - b;
+** 	t_matrix *m_proj = matrix_new(
+** 		vertex_new(2 * n / (r - l), 0, 0, 0),
+** 		vertex_new(0, 2 * n / (b - t), 0, 0),
+** 		vertex_new((r + l) / (r - l), (b + t) / (b - t), \
+** (f + n) / (f - n), 1),
+** 		vertex_new(0, 0, 0 - 2 * f * n / (f - n), 0)
+** 	);
+** 	// TODO malloc catch
+** 	return (m_proj);
+** }
 */
+
+t_matrix	*opengl_projection_matrix(float fov, float n, float f, float ar)
+{
+	float		scale;
+	float		r;
+	float		b;
+	t_vertex	*cols[4];
+	t_matrix	*m_proj;
+
+	scale = tan(fov * 0.5 * M_PI / 180) * n;
+	r = ar * scale;
+	b = scale;
+	cols[0] = vertex_new(n / r, 0, 0, 0);
+	cols[1] = vertex_new(0, n / b, 0, 0);
+	cols[2] = vertex_new(0, 0, (f + n) / (f - n), 1);
+	cols[3] = vertex_new(0, 0, 0 - 2 * f * n / (f - n), 0);
+	m_proj = matrix_new(cols[0], cols[1], cols[2], cols[3]);
+	if (cols[0] && cols[1] && cols[2] && cols[3] && m_proj)
+		return (m_proj);
+	free(cols[0]);
+	free(cols[1]);
+	free(cols[2]);
+	free(cols[3]);
+	free(m_proj);
+	return (NULL);
+}

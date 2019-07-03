@@ -6,12 +6,12 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 21:19:41 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 14:59:39 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 22:04:53 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MLX_BUTTONS_H
-# define MLX_BUTTONS_H
+#ifndef MLX_UTIL_H
+# define MLX_UTIL_H
 
 # define LCLICK 1
 # define RCLICK 2
@@ -33,6 +33,7 @@
 # define MLX void
 # define MLX_WIN void
 # define MLX_IMG void
+
 typedef unsigned char	byte;
 
 typedef struct	s_screen

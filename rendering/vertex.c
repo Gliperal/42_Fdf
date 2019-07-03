@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/01 21:48:06 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/02 22:11:04 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,11 @@ t_vertex	*vertex_new(float x, float y, float z, float w)
 
 t_vertex	*vertex_scale(t_vertex *vertex, float scale)
 {
-	return vertex_new(vertex->x * scale, vertex->y * scale, vertex->z * scale, vertex->w * scale);
+	return (vertex_new(vertex->x * scale, vertex->y * scale, \
+			vertex->z * scale, vertex->w * scale));
 }
 
-t_vertex	*vertex_sum_four(t_vertex *v1, t_vertex *v2, t_vertex *v3, t_vertex *v4)
+t_vertex	*vertex_sum_four(t_vtx *v1, t_vtx *v2, t_vtx *v3, t_vtx *v4)
 {
 	t_vertex *v;
 

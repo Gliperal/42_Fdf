@@ -14,7 +14,7 @@ vpath libmlx.a $(LIBMLX)
 vpath librendering.a $(LIBRENDERING)
 
 $(NAME): $(OBJS) -lmlx -lft -lrendering
-	$(CC) $(OBJS) -L $(LIBMLX) -lmlx -L $(LIBFT) -lft $(FRAMEWORKS) -L $(LIBRENDERING) -lrendering -o $(NAME)
+	$(CC) $(OBJS) -L $(LIBMLX) -lmlx -L $(LIBFT) -lft -L $(LIBRENDERING) -lrendering $(FRAMEWORKS) -o $(NAME)
 
 .PHONY: all clean fclean re
 
