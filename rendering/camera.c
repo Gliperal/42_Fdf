@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 11:33:26 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 15:52:45 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 16:16:50 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,6 @@ static void	update_matrix(t_camera *camera)
 	t_matrix *m_proj = opengl_projection_matrix(camera->fov, camera->n, camera->f, camera->ar);
 	t_matrix *m_trtt = matrix_multiply(m_rotate, m_translate);
 	t_matrix *m_prtrtt = matrix_multiply(m_proj, m_trtt);
-		matrix_print(m_translate);
-		matrix_print(m_rotate);
-		matrix_print(m_proj);
-		matrix_print(m_trtt);
-		matrix_print(m_prtrtt);
 	free(m_translate);
 	free(m_rotate);
 	free(m_proj);

@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 15:56:57 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 16:17:49 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,10 @@ t_map	*transform_map_to_ndc(t_map *map, t_camera *camera)
 			// perform clipping
 			if (!new->data[y][x])
 				return (NULL);
-			vertex_print(map->data[y][x]);
-			ft_printf(" -> ");
-			vertex_print(new->data[y][x]);
-			ft_printf("\n");
+//			vertex_print(map->data[y][x]);
+//			ft_printf(" -> ");
+//			vertex_print(new->data[y][x]);
+//			ft_printf("\n");
 			// clip coordinates to NDC coordinates
 			new->data[y][x]->x = new->data[y][x]->x / new->data[y][x]->w;
 			new->data[y][x]->y = new->data[y][x]->y / new->data[y][x]->w;
@@ -101,7 +101,6 @@ void	put_map_to_screen(t_map *map, t_screen *screen)
 			src = map->data[y][x];
 			if (src == NULL)
 				continue;
-			vertex_print(src);
 			psrc.x = (int) src->x;
 			psrc.y = (int) src->y;
 			if (y > 0)
@@ -204,13 +203,13 @@ void	fdf(t_map *map)
 	if (param == NULL)
 		do_exit("Param creation failed. Exiting...", 1);
 	t_screen *screen = new_screen(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello world!");
-	float far = ft_max(map->width, map->height) * 3;
+	float far = ft_max(42, ft_max(map->width, map->height) * 3);
 	param->camera = camera_new(60, 1, far, (float) screen->width / screen->height);
 	param->input = input_new(&on_update, param, screen->win_ptr);
 	if (screen == NULL || param->camera == NULL || param->input == NULL)
 		do_exit("Things creation failed. Exiting...", 1);
-	param->camera->position->x = 0;//map->width / 2;
-	param->camera->position->y = 0;//map->height / 2;
+	param->camera->position->x = map->width / 2;
+	param->camera->position->y = map->height / 2;
 	param->screen = screen;
 	param->world = map;
 	render(param);
