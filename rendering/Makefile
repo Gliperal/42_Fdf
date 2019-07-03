@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -Werror
 FRAMEWORKS=-framework OpenGL -framework AppKit
-SRC=vertex.c quaternion.c matrix.c ft_draw_line.c
-OBJS=vertex.o quaternion.o matrix.o ft_draw_line.o
+SRC=vertex.c quaternion.c matrix.c ft_draw_line.c camera.c
+OBJS=vertex.o quaternion.o matrix.o ft_draw_line.o camera.o
 RM=rm -rf
 NAME=librendering.a
 AR=ar rcs
@@ -26,3 +26,4 @@ vertex.o: vertex.h
 quaternion.o: quaternion.h
 matrix.o: matrix.h vertex.h
 ft_draw_line.o: mlx_util.h
+camera.o: camera.h matrix.h

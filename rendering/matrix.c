@@ -6,13 +6,14 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 22:23:22 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 12:27:00 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <math.h>
 
+#include "../libft/libft.h"
 #include "matrix.h"
 
 t_vertex	*transform_vertex(t_matrix *matrix, t_vertex *vertex)
@@ -41,6 +42,8 @@ t_matrix	*matrix_multiply(t_matrix *m1, t_matrix *m2)
 {
 	t_matrix *result;
 
+	if (m1 == NULL || m2 == NULL)
+		return (NULL);
 	result = (t_matrix *)malloc(sizeof(t_matrix));
 	if (result == NULL)
 		return (NULL);
@@ -116,4 +119,21 @@ t_matrix	*opengl_projection_matrix(float fov, float n, float f, float ar)
 	free(cols[3]);
 	free(m_proj);
 	return (NULL);
+}
+
+void	matrix_print(t_matrix *matrix)
+{
+	t_vertex *v1;
+	t_vertex *v2;
+	t_vertex *v3;
+	t_vertex *v4;
+
+	v1 = matrix->x;
+	v2 = matrix->y;
+	v3 = matrix->z;
+	v4 = matrix->w;
+	ft_printf("[%7.2f %7.2f %7.2f %7.2f]\n", v1->x, v2->x, v3->x, v4->x);
+	ft_printf("[%7.2f %7.2f %7.2f %7.2f]\n", v1->y, v2->y, v3->y, v4->y);
+	ft_printf("[%7.2f %7.2f %7.2f %7.2f]\n", v1->z, v2->z, v3->z, v4->z);
+	ft_printf("[%7.2f %7.2f %7.2f %7.2f]\n", v1->w, v2->w, v3->w, v4->w);
 }

@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 22:00:18 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 12:26:22 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	test_print(t_vertex *old, t_vertex *new)
 # define SCREEN_WIDTH 1280
 # define SCREEN_HEIGHT 720
 
-t_map	*transform_map_to_ndc(t_matrix *matrix, t_map *map)
+t_map	*transform_map_to_ndc(t_map *map, t_camera *camera)
 {
 	t_map *new = (t_map *)malloc(sizeof(t_map));
 	if (!new)
@@ -57,7 +57,7 @@ t_map	*transform_map_to_ndc(t_matrix *matrix, t_map *map)
 			return (NULL);
 		for (int x = 0; x < new->width; x++)
 		{
-			new->data[y][x] = transform_vertex(matrix, map->data[y][x]);
+			new->data[y][x] = camera_vertex_to_clip(camera, map->data[y][x]);
 			if (!new->data[y][x])
 				return (NULL);
 			// TODO perform clipping
@@ -75,20 +75,6 @@ t_map	*transform_map_to_ndc(t_matrix *matrix, t_map *map)
 		}
 	}
 	return (new);
-}
-
-void	test_print_matrix(t_matrix *matrix)
-{
-	t_vertex *v1 = matrix->x;
-	t_vertex *v2 = matrix->y;
-	t_vertex *v3 = matrix->z;
-	t_vertex *v4 = matrix->w;
-	ft_printf("[%7.2f %7.2f %7.2f %7.2f]\n[%7.2f %7.2f %7.2f %7.2f]\n[%7.2f %7.2f %7.2f %7.2f]\n[%7.2f %7.2f %7.2f %7.2f]\n",
-			v1->x, v2->x, v3->x, v4->x,
-			v1->y, v2->y, v3->y, v4->y,
-			v1->z, v2->z, v3->z, v4->z,
-			v1->w, v2->w, v3->w, v4->w
-	);
 }
 
 void	put_map_to_screen(t_map *map, t_screen *screen)
@@ -125,24 +111,7 @@ void	put_map_to_screen(t_map *map, t_screen *screen)
 
 void	redraw(t_param *param)
 {
-	t_matrix *m_translate = matrix_new(
-		vertex_new(1, 0, 0, 0),
-		vertex_new(0, 1, 0, 0),
-		vertex_new(0, 0, 1, 0),
-		vertex_new(0, 0, 20, 1)
-	);
-	// TODO catch malloc
-	t_matrix *m_rotate = quaternion_to_matrix(param->camera->rotation);
-	// TODO catch malloc
-	float fov = 60;
-	float n = 1;
-	float f = 42;
-	float ar = (float) SCREEN_WIDTH / SCREEN_HEIGHT;
-	t_matrix *m_proj = opengl_projection_matrix(fov, n, f, ar);
-	t_matrix *m_trtt = matrix_multiply(m_rotate, m_translate);
-	t_matrix *m_prtrtt = matrix_multiply(m_proj, m_trtt);
-	// TODO free inbetween steps
-	t_map *transformed = transform_map_to_ndc(m_prtrtt, param->world);
+	t_map *transformed = transform_map_to_ndc(param->world, param->camera);
 	put_map_to_screen(transformed, param->screen);
 	free_map(transformed);
 }
@@ -152,14 +121,12 @@ void	render(t_param *param)
 	t_screen *screen;
 
 	screen = param->screen;
-	if (param->camera_updated)
-	{
-		param->camera_updated = 0;
+	if (param->camera->updated)
 		redraw(param);
-	}
 	mlx_put_image_to_window(screen->mlx_ptr, screen->win_ptr, screen->img_ptr, 0, 0);
+	t_quat *pos = param->camera->position;
 	t_quat *rot = param->camera->rotation;
-	char *str = ft_strprintf("Camera: 0, 0, 0 (%+.2f + %+.2fi + %+.2fj + %+.2fk)", rot->s, rot->i, rot->j, rot->k);
+	char *str = ft_strprintf("Camera: %+.2f, %+.2f, %+.2f (%+.2f + %+.2fi + %+.2fj + %+.2fk)", pos->i, pos->j, pos->k, rot->s, rot->i, rot->j, rot->k);
 	mlx_string_put(screen->mlx_ptr, screen->win_ptr, 0, 0, 0xFFFFFF, str);
 	free(str);
 }
@@ -198,6 +165,7 @@ void	camera_rotate(t_camera *camera, int x, int y)
 	float cosy;
 	float siny;
 
+	camera->updated = 1;
 	angx = (float) x / 10 * (M_PI / 180);
 	angy = (float) (0 - y) / 10 * (M_PI / 180);
 	cosx = cos(angx);
@@ -214,10 +182,7 @@ void	camera_rotate(t_camera *camera, int x, int y)
 int handle_mouse_move(int x, int y, t_param *param)
 {
 	if (param->mouse1held && (x != param->mouse_x || y != param->mouse_y))
-	{
-		param->camera_updated = 1;
 		camera_rotate(param->camera, x - param->mouse_x, y - param->mouse_y);
-	}
 	if (param->mouse2held)
 		ft_printf("Right mouse dragged %d,%d\n", x - param->mouse_x, y - param->mouse_y);
 	param->mouse_x = x;
@@ -290,17 +255,10 @@ void	fdf(t_map *map)
 		do_exit("Param creation failed. Exiting...", 1);
 	param->mouse1held = 0;
 	param->mouse2held = 0;
-	param->camera_updated = 1;
 	t_screen *screen = new_screen(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello world!");
-	param->camera = (t_camera *)malloc(sizeof(t_camera));
+	param->camera = camera_new(60, 1, 42, (float) SCREEN_WIDTH / SCREEN_HEIGHT);
 	if (screen == NULL || param->camera == NULL)
 		do_exit("Things creation failed. Exiting...", 1);
-	param->camera->x = 0;
-	param->camera->y = 0;
-	param->camera->z = 0;
-	param->camera->rotation = quaternion_new(1, 0, 0, 0);
-	if (param->camera->rotation == NULL)
-		do_exit("Camera rotation creation failed. Exiting...", 1);
 	param->screen = screen;
 	param->world = map;
 	render(param);
