@@ -6,25 +6,26 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 13:39:46 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 16:56:58 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 12:34:14 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "input.h"
 #include "minilibx_macos/mlx.h"
 
-// TODO REMOVE
-#include <stdio.h>
-
 static void	send_update(t_input *input)
 {
+	int key;
+
 	(*input->on_update)(input->param);
-	for (int key = 0; key < MAX_BUTTONS; key++)
+	key = 0;
+	while (key < MAX_BUTTONS)
 	{
 		if (input->button_states[key] == PRESSED)
 			input->button_states[key] = HELD;
 		else if (input->button_states[key] == RELEASED)
 			input->button_states[key] = NOT_HELD;
+		key++;
 	}
 	input->mouse_moved.x = 0;
 	input->mouse_moved.y = 0;
@@ -39,7 +40,7 @@ static int	handle_key_press(int key, t_input *input)
 	return (0);
 }
 
-static int handle_key_release(int key, t_input *input)
+static int	handle_key_release(int key, t_input *input)
 {
 	if (key < 0 || key > MAX_BUTTONS)
 		return (1);
@@ -82,7 +83,7 @@ static int	handle_mouse_release(int button, int x, int y, t_input *input)
 	return (0);
 }
 
-static int handle_mouse_move(int x, int y, t_input *input)
+static int	handle_mouse_move(int x, int y, t_input *input)
 {
 	int moved;
 
@@ -92,19 +93,33 @@ static int handle_mouse_move(int x, int y, t_input *input)
 	return (0);
 }
 
-static int	handle_exit()
+static int	handle_expose(t_input *input)
 {
-	exit (0);
+	// TODO force redraw
+	send_update(input);
+	return (0);
+}
+
+static int	handle_exit(void)
+{
+	exit(0);
 }
 
 t_input	*input_new(void (*on_update)(void *), void *param, MLX_WIN *win_ptr)
 {
-	t_input *input = (t_input *)malloc(sizeof(t_input));
+	t_input	*input;
+	int		i;
+
+	input = (t_input *)malloc(sizeof(t_input));
 	if (input == NULL)
 		return (NULL);
 	input->mouse_yet_to_move = 1;
-	for (int i = 0; i < MAX_BUTTONS + 1; i++)
+	i = 0;
+	while (i < MAX_BUTTONS + 1)
+	{
 		input->button_states[i] = NOT_HELD;
+		i++;
+	}
 	input->on_update = on_update;
 	input->param = param;
 	mlx_hook(win_ptr, 2, 0, &handle_key_press, input);
@@ -112,6 +127,7 @@ t_input	*input_new(void (*on_update)(void *), void *param, MLX_WIN *win_ptr)
 	mlx_hook(win_ptr, 4, 0, &handle_mouse_press, input);
 	mlx_hook(win_ptr, 5, 0, &handle_mouse_release, input);
 	mlx_hook(win_ptr, 6, 0, &handle_mouse_move, input);
+	mlx_hook(win_ptr, 12, 0, &handle_expose, input);
 	mlx_hook(win_ptr, 17, 0, &handle_exit, NULL);
 	return (input);
 }

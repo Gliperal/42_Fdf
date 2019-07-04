@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 11:33:26 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 19:19:44 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 12:54:00 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,18 @@
 
 static void	update_matrix(t_camera *camera)
 {
-	t_matrix *m_translate = translate_matrix(camera->position);
-	t_matrix *m_rotate = rotation_matrix(camera->rotation);
-	t_matrix *m_proj = opengl_projection_matrix(camera->fov, camera->n, camera->f, camera->ar);
-	t_matrix *m_trtt = matrix_multiply(m_rotate, m_translate);
-	t_matrix *m_prtrtt = matrix_multiply(m_proj, m_trtt);
+	t_matrix *m_translate;
+	t_matrix *m_rotate;
+	t_matrix *m_proj;
+	t_matrix *m_trtt;
+	t_matrix *m_prtrtt;
+
+	m_translate = translate_matrix(camera->position);
+	m_rotate = rotation_matrix(camera->rotation);
+	m_proj = opengl_projection_matrix(camera->fov, \
+			camera->n, camera->f, camera->ar);
+	m_trtt = matrix_multiply(m_rotate, m_translate);
+	m_prtrtt = matrix_multiply(m_proj, m_trtt);
 	free(m_translate);
 	free(m_rotate);
 	free(m_proj);
@@ -42,7 +49,9 @@ t_vertex	*camera_vertex_to_clip(t_camera *camera, t_vertex *vertex)
 
 t_camera	*camera_new(float fov, float n, float f, float ar)
 {
-	t_camera *camera = (t_camera *)malloc(sizeof(t_camera));
+	t_camera *camera;
+
+	camera = (t_camera *)malloc(sizeof(t_camera));
 	if (camera == NULL)
 		return (NULL);
 	camera->rotation = quaternion_new(1, 0, 0, 0);
@@ -62,16 +71,19 @@ t_camera	*camera_new(float fov, float n, float f, float ar)
 	return (camera);
 }
 
-void	camera_move(t_camera *camera, t_vertex *offset)
+void	camera_move(t_camera *camera, const t_vertex *offset)
 {
-	quaternion_rotate_vertex(camera->rotation, offset);
-	vertex_move(camera->position, offset);
+	t_vertex *rotated_offset;
+
+	rotated_offset = quaternion_rotate_vertex(camera->rotation, offset);
+	if (rotated_offset != NULL)
+		vertex_move(camera->position, rotated_offset);
 }
 
 void	camera_spin(t_camera *camera, float angle)
 {
-	t_quat rot;
-	float rad;
+	t_quat	rot;
+	float	rad;
 
 	rad = angle * (M_PI / 180);
 	rot.s = cos(rad);
@@ -84,24 +96,21 @@ void	camera_spin(t_camera *camera, float angle)
 
 void	camera_rotate(t_camera *camera, t_point rotation)
 {
-	t_quat rot;
-	float angx;
-	float angy;
-	float cosx;
-	float sinx;
-	float cosy;
-	float siny;
+	float	ang[2];
+	float	cosine[2];
+	float	sine[2];
+	t_quat	rot;
 
-	angx = (float) rotation.x / 10 * (M_PI / 180);
-	angy = (float) (0 - rotation.y) / 10 * (M_PI / 180);
-	cosx = cos(angx);
-	sinx = sin(angx);
-	cosy = cos(angy);
-	siny = sin(angy);
-	rot.s = cosx * cosy;
-	rot.i = cosx * siny;
-	rot.j = sinx * cosy;
-	rot.k = sinx * siny;
+	ang[0] = (float)rotation.x / 10 * (M_PI / 180);
+	ang[1] = (float)(0 - rotation.y) / 10 * (M_PI / 180);
+	cosine[0] = cos(ang[0]);
+	cosine[1] = cos(ang[1]);
+	sine[0] = sin(ang[0]);
+	sine[1] = sin(ang[1]);
+	rot.s = cosine[0] * cosine[1];
+	rot.i = cosine[0] * sine[1];
+	rot.j = sine[0] * cosine[1];
+	rot.k = sine[0] * sine[1];
 	quaternion_right_multiply(camera->rotation, &rot);
 	camera->updated = 1;
 }

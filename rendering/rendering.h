@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/02 21:09:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 19:35:19 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 13:08:15 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,6 @@
 # include "camera.h"
 # include "cpoint.h"
 
-void		ft_draw_line(t_screen *screen, t_cpoint src, t_cpoint dst);
+void	ft_draw_line(t_screen *screen, t_cpoint src, t_cpoint dst);
 
 #endif

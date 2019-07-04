@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 18:39:12 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 12:52:50 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void		quaternion_right_multiply(t_quat *q1, t_quat *q2)
 	q1->s = s;
 }
 
-void	quaternion_rotate_vertex(t_quat *q, t_vertex *vertex)
+t_vertex	*quaternion_rotate_vertex(t_quat *q, const t_vertex *vertex)
 {
 	t_quat	qi;
 	t_quat	v;
@@ -87,7 +87,5 @@ void	quaternion_rotate_vertex(t_quat *q, t_vertex *vertex)
 	v.k = vertex->z;
 	quaternion_left_multiply(&v, q);
 	quaternion_right_multiply(&v, &qi);
-	vertex->x = v.i;
-	vertex->y = v.j;
-	vertex->z = v.k;
+	return (vertex_new(v.i, v.j, v.k, 0));
 }

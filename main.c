@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 21:50:33 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 13:52:50 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,25 +20,31 @@
 #include "libft/libft.h"
 #include "map.h"
 
-void	free_map(t_map *map)
-{
-	for (int y = 0; y < map->height; y++)
-	{
-		for (int x = 0; x < map->width; x++)
-			free(map->data[y][x]);
-		free(map->data[y]);
-	}
-	free(map->data);
-	free(map);
-}
-
 void	vertex_print(t_vertex *v)
 {
 	ft_printf("(%.2f, %.2f, %.2f, %.2f)", v->x, v->y, v->z, v->w);
 }
 
-# define SCREEN_WIDTH 1280
-# define SCREEN_HEIGHT 720
+void	free_map(t_map *map)
+{
+	int y;
+	int x;
+
+	y = 0;
+	while (y < map->height)
+	{
+		x = 0;
+		while (x < map->width)
+		{
+			free(map->data[y][x]);
+			x++;
+		}
+		free(map->data[y]);
+		y++;
+	}
+	free(map->data);
+	free(map);
+}
 
 void	color_set_alpha(int *color, int alpha)
 {
@@ -66,52 +72,66 @@ int	color_scale(int color, float scale)
 	return (alpha << 24) | (red << 16) | (green << 8) | blue;
 }
 
-t_map	*transform_map_to_ndc(t_map *map, t_camera *camera)
+t_vertex	*clip_vertex_to_screen(t_vertex *clip, int s_width, int s_height)
 {
-	t_map *new = (t_map *)malloc(sizeof(t_map));
+	float		ndc_x;
+	float		ndc_y;
+	float		ndc_z;
+	t_vertex	*v;
+
+	if (clip == NULL)
+		return (NULL);
+	ndc_x = clip->x / clip->w;
+	ndc_y = clip->y / clip->w;
+	ndc_z = clip->z / clip->w;
+	if (ndc_z < -1 || ndc_z > 1)
+		return (NULL);
+	v = vertex_new(\
+			(ndc_x + 1) * s_width / 2, \
+			(ndc_y + 1) * s_height / 2, \
+			0, 0);
+	if (v == NULL)
+		return (NULL);
+	if (ndc_z > 0.90)
+		v->color = color_scale(clip->color, 10 - 10 * ndc_z);
+	else
+		v->color = clip->color;
+	return (v);
+}
+
+t_map	*transform_map_to_screen(t_param *param)
+{
+	t_map		*new;
+	int			x;
+	int			y;
+	t_vertex	*old;
+
+	new = (t_map *)malloc(sizeof(t_map));
 	if (!new)
 		return (NULL);
-	new->width = map->width;
-	new->height = map->height;
+	new->width = param->world->width;
+	new->height = param->world->height;
 	new->data = (t_vertex ***)malloc(new->height * sizeof(t_vertex **));
 	if (!new->data)
 		return (NULL);
-	for (int y = 0; y < new->height; y++)
+	y = 0;
+	while (y < new->height)
 	{
 		new->data[y] = (t_vertex **)malloc(new->width * sizeof(t_vertex *));
 		if (!new->data[y])
 			return (NULL);
-		for (int x = 0; x < new->width; x++)
+		x = 0;
+		while (x < new->width)
 		{
-			new->data[y][x] = camera_vertex_to_clip(camera, map->data[y][x]);
-			// perform clipping
-			if (!new->data[y][x])
-				return (NULL);
-//			vertex_print(map->data[y][x]);
-//			ft_printf(" -> ");
-//			vertex_print(new->data[y][x]);
-//			ft_printf("\n");
-			// clip coordinates to NDC coordinates
-			new->data[y][x]->x = new->data[y][x]->x / new->data[y][x]->w;
-			new->data[y][x]->y = new->data[y][x]->y / new->data[y][x]->w;
-			new->data[y][x]->z = new->data[y][x]->z / new->data[y][x]->w;
-			if (new->data[y][x]->z < -1 || new->data[y][x]->z > 1)
-			{
-				free(new->data[y][x]);
-				new->data[y][x] = NULL;
-			}
-			else
-			{
-				// NDC coordinates to screen coordinates
-				float half_width = SCREEN_WIDTH / 2;
-				float half_height = SCREEN_HEIGHT / 2;
-				new->data[y][x]->x = new->data[y][x]->x * half_width + half_width;
-				new->data[y][x]->y = new->data[y][x]->y * half_height + half_height;
-//				ft_printf("%f ", new->data[y][x]->z);
-				if (new->data[y][x]->z > 0.90)
-					new->data[y][x]->color = color_scale(new->data[y][x]->color, 10 - 10 * new->data[y][x]->z);
-			}
+			new->data[y][x] = camera_vertex_to_clip(param->camera, \
+					param->world->data[y][x]);
+			old = new->data[y][x];
+			new->data[y][x] = clip_vertex_to_screen(new->data[y][x], \
+					param->screen->width, param->screen->height);
+			free(old);
+			x++;
 		}
+		y++;
 	}
 	return (new);
 }
@@ -120,66 +140,91 @@ t_cpoint	vertex_to_cpoint(t_vertex *vertex)
 {
 	t_cpoint cpoint;
 
-	cpoint.x = (int) vertex->x;
-	cpoint.y = (int) vertex->y;
+	cpoint.x = (int)vertex->x;
+	cpoint.y = (int)vertex->y;
 	cpoint.color = vertex->color;
 	return (cpoint);
 }
 
-void	put_map_to_screen(t_map *map, t_screen *screen)
+static void	put_edges_to_screen(t_map *map, t_screen *screen, int x, int y)
 {
 	t_vertex *src;
 	t_vertex *dst;
 	t_cpoint psrc;
 	t_cpoint pdst;
 
+	src = map->data[y][x];
+	if (src == NULL)
+		return ;
+	psrc = vertex_to_cpoint(src);
+	if (y > 0)
+	{
+		dst = map->data[y - 1][x];
+		if (dst == NULL)
+			return ;
+		pdst = vertex_to_cpoint(dst);
+		ft_draw_line(screen, psrc, pdst);
+	}
+	if (x > 0)
+	{
+		dst = map->data[y][x - 1];
+		if (dst == NULL)
+			return ;
+		pdst = vertex_to_cpoint(dst);
+		ft_draw_line(screen, psrc, pdst);
+	}
+}
+
+void	put_map_to_screen(t_map *map, t_screen *screen)
+{
+	int x;
+	int y;
+
 	ft_bzero(screen->data, screen->width * screen->height * screen->bpp / 8);
-	for (int y = 0; y < map->height; y++)
-		for (int x = 0; x < map->width; x++)
+	y = 0;
+	while (y < map->height)
+	{
+		x = 0;
+		while (x < map->width)
 		{
-			src = map->data[y][x];
-			if (src == NULL)
-				continue;
-			psrc = vertex_to_cpoint(src);
-			if (y > 0)
-			{
-				dst = map->data[y - 1][x];
-				if (dst == NULL)
-					continue;
-				pdst = vertex_to_cpoint(dst);
-				ft_draw_line(screen, psrc, pdst);
-			}
-			if (x > 0)
-			{
-				dst = map->data[y][x - 1];
-				if (dst == NULL)
-					continue;
-				pdst = vertex_to_cpoint(dst);
-				ft_draw_line(screen, psrc, pdst);
-			}
+			put_edges_to_screen(map, screen, x, y);
+			x++;
 		}
+		y++;
+	}
 }
 
 void	redraw(t_param *param)
 {
-	t_map *transformed = transform_map_to_ndc(param->world, param->camera);
-	put_map_to_screen(transformed, param->screen);
+	t_map	*transformed;
+	t_point	screen_size;
+
+	screen_size.x = param->screen->width;
+	screen_size.y = param->screen->height;
+	transformed = transform_map_to_screen(param);
+	put_map_to_screen(transformed, param->screen); // TODO the whole function can fit here
 	free_map(transformed);
 }
 
 void	render(t_param *param)
 {
-	t_screen *screen;
+	t_screen	*screen;
+	t_vertex	*pos;
+	t_quat		*rot;
+	char		*cam_str;
 
-	screen = param->screen;
 	if (param->camera->updated)
 		redraw(param);
-	mlx_put_image_to_window(screen->mlx_ptr, screen->win_ptr, screen->img_ptr, 0, 0);
-	t_vertex *pos = param->camera->position;
-	t_quat *rot = param->camera->rotation;
-	char *str = ft_strprintf("Camera: %+.2f, %+.2f, %+.2f (%+.2f + %+.2fi + %+.2fj + %+.2fk)", pos->x, pos->y, pos->z, rot->s, rot->i, rot->j, rot->k);
-	mlx_string_put(screen->mlx_ptr, screen->win_ptr, 0, 0, 0xFFFFFF, str);
-	free(str);
+	screen = param->screen;
+	mlx_put_image_to_window(screen->mlx_ptr, screen->win_ptr, screen->img_ptr,\
+			0, 0);
+	pos = param->camera->position;
+	rot = param->camera->rotation;
+	cam_str = ft_strprintf("Camera: %+.2f, %+.2f, %+.2f \
+			(%+.2f + %+.2fi + %+.2fj + %+.2fk)", \
+			pos->x, pos->y, pos->z, rot->s, rot->i, rot->j, rot->k);
+	mlx_string_put(screen->mlx_ptr, screen->win_ptr, 0, 0, 0xFFFFFF, cam_str);
+	free(cam_str);
 }
 
 /*
@@ -205,7 +250,8 @@ t_screen	*new_screen(int width, int height, char *title)
 	screen->img_ptr = mlx_new_image(screen->mlx_ptr, width, height);
 	if (screen->img_ptr == NULL)
 		return (NULL);
-	screen->data = (void *)mlx_get_data_addr(screen->img_ptr, &screen->bpp, &screen->size_line, &screen->endian);
+	screen->data = (void *)mlx_get_data_addr(screen->img_ptr, &screen->bpp, \
+			&screen->size_line, &screen->endian);
 	if (screen->data == NULL)
 		return (NULL);
 	screen->width = width;
@@ -218,6 +264,13 @@ void	do_exit(char *err, int exit_code)
 	ft_putendl(err);
 	exit(exit_code);
 }
+
+const t_vertex	g_vertex_left = {-1, 0, 0, 0, 0};
+const t_vertex	g_vertex_right = {1, 0, 0, 0, 0};
+const t_vertex	g_vertex_up = {0, -1, 0, 0, 0};
+const t_vertex	g_vertex_down = {0, 1, 0, 0, 0};
+const t_vertex	g_vertex_back = {0, 0, -1, 0, 0};
+const t_vertex	g_vertex_front = {0, 0, 1, 0, 0};
 
 void	on_update(void *p)
 {
@@ -233,11 +286,9 @@ void	on_update(void *p)
 	if (param->input->button_states[KEY_Q] == PRESSED)
 		camera_spin(param->camera, -1);
 	if (param->input->button_states[RIGHT] == PRESSED)
-		// TODO free vertex or put it on stack
-		camera_move(param->camera, vertex_new(1, 0, 0, 0));
+		camera_move(param->camera, &g_vertex_right);
 	if (param->input->button_states[UP] == PRESSED)
-		// TODO free vertex or put it on stack
-		camera_move(param->camera, vertex_new(0, -1, 0, 0));
+		camera_move(param->camera, &g_vertex_up);
 	if (param->input->button_states[RCLICK] == HELD)
 		ft_printf("Right mouse dragged %d,%d\n", param->input->mouse_moved.x, param->input->mouse_moved.y);
 	render(param);
@@ -245,12 +296,18 @@ void	on_update(void *p)
 
 void	fdf(t_map *map)
 {
-	t_param *param = (t_param *)malloc(sizeof(t_param));
+	t_param		*param;
+	t_screen	*screen;
+	float		aspect_ratio;
+	float		far;
+
+	param = (t_param *)malloc(sizeof(t_param));
 	if (param == NULL)
 		do_exit("Param creation failed. Exiting...", 1);
-	t_screen *screen = new_screen(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello world!");
-	float far = ft_max(42, ft_max(map->width, map->height) * 2);
-	param->camera = camera_new(60, 1, far, (float) screen->width / screen->height);
+	screen = new_screen(1280, 720, "Hello world!");
+	far = ft_max(42, ft_max(map->width, map->height) * 2);
+	aspect_ratio = (float)screen->width / screen->height;
+	param->camera = camera_new(60, 1, far, aspect_ratio);
 	param->input = input_new(&on_update, param, screen->win_ptr);
 	if (screen == NULL || param->camera == NULL || param->input == NULL)
 		do_exit("Things creation failed. Exiting...", 1);
@@ -259,6 +316,6 @@ void	fdf(t_map *map)
 	param->screen = screen;
 	param->world = map;
 	render(param);
-	mlx_do_key_autorepeatoff(screen->mlx_ptr);
+//	mlx_do_key_autorepeatoff(screen->mlx_ptr);
 	mlx_loop(screen->mlx_ptr);
 }

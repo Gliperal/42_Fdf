@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 20:36:57 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 21:56:40 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 13:07:59 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #include "map.h"
 #include "libft/libft.h"
-# include "rendering/rendering.h"
+#include "rendering/rendering.h"
 
 /*
 static void	free_map(t_map *map)

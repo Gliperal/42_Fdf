@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 21:19:41 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 16:54:15 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 11:02:53 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@
 # define MLX_WIN void
 # define MLX_IMG void
 
-typedef unsigned char	byte;
+typedef unsigned char	t_byte;
 
 typedef struct	s_screen
 {
@@ -129,7 +129,7 @@ typedef struct	s_screen
 	MLX			*mlx_ptr;
 	MLX_WIN		*win_ptr;
 	MLX_IMG		*img_ptr;
-	byte		*data;
+	t_byte		*data;
 	int			bpp;
 	int			size_line;
 	int			endian;

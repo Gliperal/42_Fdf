@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 20:36:57 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 12:35:23 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 12:17:31 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ void	fdf(t_map *map);
 
 int main(int argc, char **argv)
 {
-	int fd;
-	t_map *map;
+	int		fd;
+	t_map	*map;
 
 	if (argc != 2)
 	{

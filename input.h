@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 13:57:37 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 14:39:10 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 12:21:52 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,14 @@
 # include "libft/libft.h"
 # include "rendering/mlx_util.h"
 
-typedef char			t_button_state;
+typedef char		t_button_state;
 
 # define NOT_HELD 0
 # define HELD 1
 # define PRESSED 2
 # define RELEASED 3
 
-typedef struct	s_input
+typedef struct		s_input
 {
 	t_button_state	button_states[MAX_BUTTONS + 1];
 	int				mouse_yet_to_move;
@@ -33,6 +33,8 @@ typedef struct	s_input
 	void			*param;
 }					t_input;
 
-t_input	*input_new(void (*on_update)(void *), void *param, MLX_WIN *win_ptr);
+typedef	void		(*t_func)(void *);
+
+t_input				*input_new(t_func on_update, void *param, MLX_WIN *win_ptr);
 
 #endif
