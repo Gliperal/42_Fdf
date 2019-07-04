@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 20:36:57 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 20:54:48 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 21:56:40 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,10 +97,10 @@ void	color_map(t_map *map)
 	float max;
 	unsigned int color[3];
 
-	min = map->data[0][0]->z;
-	max = map->data[0][0]->z;
+	min = 2147483647;
+	max = -2147483648;
 	for (int y = 0; y < map->height; y++)
-		for (int x = 0; x < map->height; x++)
+		for (int x = 0; x < map->width; x++)
 		{
 			if (map->data[y][x]->z < min)
 				min = map->data[y][x]->z;
