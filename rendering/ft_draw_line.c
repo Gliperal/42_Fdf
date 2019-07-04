@@ -6,12 +6,13 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/02 16:09:11 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 13:21:48 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 21:17:14 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "mlx_util.h"
 #include "../libft/libft.h"
+#include "cpoint.h"
 
 static void	screen_put(t_screen *screen, int x, int y, int color)
 {
@@ -23,12 +24,18 @@ static void	screen_put(t_screen *screen, int x, int y, int color)
 		return ;
 	// TODO Maybe change screen->data to integer array
 	offset = (screen->width * y + x) * screen->bpp / 8;
-	screen->data[offset + 0] = color & 0xff;
-	screen->data[offset + 1] = (color >> 2) & 0xff;
-	screen->data[offset + 2] = (color >> 4) & 0xff;
+	screen->data[offset] = color & 0xff;
+	screen->data[offset + 1] = (color >> 8) & 0xff;
+	screen->data[offset + 2] = (color >> 16) & 0xff;
+	screen->data[offset + 3] = color >> 24;
 }
 
-static void	draw_hline(t_screen *screen, t_point src, t_point dst, int color)
+//	astep = ((dst >> 24) - (src >> 24)) / steps;
+//	rstep = ((dst >> 16) & 255 - (src >> 16) & 255) / steps;
+//	gstep = ((dst >> 8) & 255 - (src >> 8) & 255) / steps;
+//	bstep = (dst & 255 - src & 255) / steps;
+
+static void	draw_hline(t_screen *screen, t_cpoint src, t_cpoint dst)
 {
 	int	xdiff;
 	int	ydiff;
@@ -47,12 +54,12 @@ static void	draw_hline(t_screen *screen, t_point src, t_point dst, int color)
 			m -= xdiff;
 			src.y += ydir;
 		}
-		screen_put(screen, src.x, src.y, color);
+		screen_put(screen, src.x, src.y, src.color);
 		src.x++;
 	}
 }
 
-static void	draw_vline(t_screen *screen, t_point src, t_point dst, int color)
+static void	draw_vline(t_screen *screen, t_cpoint src, t_cpoint dst)
 {
 	int	ydiff;
 	int	xdiff;
@@ -71,12 +78,12 @@ static void	draw_vline(t_screen *screen, t_point src, t_point dst, int color)
 			m -= ydiff;
 			src.x += xdir;
 		}
-		screen_put(screen, src.x, src.y, color);
+		screen_put(screen, src.x, src.y, src.color);
 		src.y++;
 	}
 }
 
-void		ft_draw_line(t_screen *screen, t_point src, t_point dst, int color)
+void		ft_draw_line(t_screen *screen, t_cpoint src, t_cpoint dst)
 {
 	int	diffx;
 	int	diffy;
@@ -86,15 +93,15 @@ void		ft_draw_line(t_screen *screen, t_point src, t_point dst, int color)
 	if (diffy > diffx)
 	{
 		if (src.y > dst.y)
-			draw_vline(screen, dst, src, color);
+			draw_vline(screen, dst, src);
 		else
-			draw_vline(screen, src, dst, color);
+			draw_vline(screen, src, dst);
 	}
 	else
 	{
 		if (src.x > dst.x)
-			draw_hline(screen, dst, src, color);
+			draw_hline(screen, dst, src);
 		else
-			draw_hline(screen, src, dst, color);
+			draw_hline(screen, src, dst);
 	}
 }

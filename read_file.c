@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 20:36:57 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 13:04:29 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 20:54:48 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,54 @@ static int	read_map_row(int fd, t_map *map)
 	return (1);
 }
 
+const unsigned char g_min_color[3] = {0xFF, 0xFF, 0xFF};
+const unsigned char g_mid_color[3] = {0x8B, 0x45, 0x13};
+const unsigned char g_max_color[3] = {0x22, 0x8B, 0x22};
+
+void	color_map(t_map *map)
+{
+	float min;
+	float mid;
+	float max;
+	unsigned int color[3];
+
+	min = map->data[0][0]->z;
+	max = map->data[0][0]->z;
+	for (int y = 0; y < map->height; y++)
+		for (int x = 0; x < map->height; x++)
+		{
+			if (map->data[y][x]->z < min)
+				min = map->data[y][x]->z;
+			if (map->data[y][x]->z > max)
+				max = map->data[y][x]->z;
+		}
+	mid = (min + max) / 2;
+	if (min == mid)
+		min -= 1;
+	if (max == mid)
+		max += 1;
+	for (int y = 0; y < map->height; y++)
+		for (int x = 0; x < map->width; x++)
+		{
+			if (map->data[y][x]->z < mid)
+			{
+				float dist = (map->data[y][x]->z - min) / (mid - min);
+				color[0] = dist * g_mid_color[0] + (1 - dist) * g_min_color[0];
+				color[1] = dist * g_mid_color[1] + (1 - dist) * g_min_color[1];
+				color[2] = dist * g_mid_color[2] + (1 - dist) * g_min_color[2];
+				map->data[y][x]->color = (color[0] << 16) + (color[1] << 8) + color[2];
+			}
+			else
+			{
+				float dist = (map->data[y][x]->z - mid) / (max - mid);
+				color[0] = dist * g_max_color[0] + (1 - dist) * g_mid_color[0];
+				color[1] = dist * g_max_color[1] + (1 - dist) * g_mid_color[1];
+				color[2] = dist * g_max_color[2] + (1 - dist) * g_mid_color[2];
+				map->data[y][x]->color = (color[0] << 16) + (color[1] << 8) + color[2];
+			}
+		}
+}
+
 t_map	*read_map(int fd)
 {
 	t_map *map;
@@ -103,6 +151,9 @@ t_map	*read_map(int fd)
 		if (status == -1)
 			return (NULL);
 		else if (status == 0)
+		{
+			color_map(map);
 			return (map);
+		}
 	}
 }

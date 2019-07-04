@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 18:55:38 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 21:50:33 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,32 @@ void	vertex_print(t_vertex *v)
 
 # define SCREEN_WIDTH 1280
 # define SCREEN_HEIGHT 720
+
+void	color_set_alpha(int *color, int alpha)
+{
+	*color = *color & 0xFFFFFF;
+	*color = *color | (alpha << 24);
+}
+
+int	color_scale(int color, float scale)
+{
+	int alpha;
+	int red;
+	int green;
+	int blue;
+
+	alpha = (color >> 24) & 0xFF;
+	red = (color >> 16) & 0xFF;
+	green = (color >> 8) & 0xFF;
+	blue = color & 0xFF;
+	red *= scale;
+	green *= scale;
+	blue *= scale;
+	red &= 255;
+	green &= 255;
+	blue &= 255;
+	return (alpha << 24) | (red << 16) | (green << 8) | blue;
+}
 
 t_map	*transform_map_to_ndc(t_map *map, t_camera *camera)
 {
@@ -81,18 +107,31 @@ t_map	*transform_map_to_ndc(t_map *map, t_camera *camera)
 				float half_height = SCREEN_HEIGHT / 2;
 				new->data[y][x]->x = new->data[y][x]->x * half_width + half_width;
 				new->data[y][x]->y = new->data[y][x]->y * half_height + half_height;
+//				ft_printf("%f ", new->data[y][x]->z);
+				if (new->data[y][x]->z > 0.90)
+					new->data[y][x]->color = color_scale(new->data[y][x]->color, 10 - 10 * new->data[y][x]->z);
 			}
 		}
 	}
 	return (new);
 }
 
+t_cpoint	vertex_to_cpoint(t_vertex *vertex)
+{
+	t_cpoint cpoint;
+
+	cpoint.x = (int) vertex->x;
+	cpoint.y = (int) vertex->y;
+	cpoint.color = vertex->color;
+	return (cpoint);
+}
+
 void	put_map_to_screen(t_map *map, t_screen *screen)
 {
 	t_vertex *src;
 	t_vertex *dst;
-	t_point psrc;
-	t_point pdst;
+	t_cpoint psrc;
+	t_cpoint pdst;
 
 	ft_bzero(screen->data, screen->width * screen->height * screen->bpp / 8);
 	for (int y = 0; y < map->height; y++)
@@ -101,25 +140,22 @@ void	put_map_to_screen(t_map *map, t_screen *screen)
 			src = map->data[y][x];
 			if (src == NULL)
 				continue;
-			psrc.x = (int) src->x;
-			psrc.y = (int) src->y;
+			psrc = vertex_to_cpoint(src);
 			if (y > 0)
 			{
 				dst = map->data[y - 1][x];
 				if (dst == NULL)
 					continue;
-				pdst.x = (int) dst->x;
-				pdst.y = (int) dst->y;
-				ft_draw_line(screen, psrc, pdst, 0x0088CCFF);
+				pdst = vertex_to_cpoint(dst);
+				ft_draw_line(screen, psrc, pdst);
 			}
 			if (x > 0)
 			{
 				dst = map->data[y][x - 1];
 				if (dst == NULL)
 					continue;
-				pdst.x = (int) dst->x;
-				pdst.y = (int) dst->y;
-				ft_draw_line(screen, psrc, pdst, 0x00FFCC88);
+				pdst = vertex_to_cpoint(dst);
+				ft_draw_line(screen, psrc, pdst);
 			}
 		}
 }
@@ -213,7 +249,7 @@ void	fdf(t_map *map)
 	if (param == NULL)
 		do_exit("Param creation failed. Exiting...", 1);
 	t_screen *screen = new_screen(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello world!");
-	float far = ft_max(42, ft_max(map->width, map->height) * 3);
+	float far = ft_max(42, ft_max(map->width, map->height) * 2);
 	param->camera = camera_new(60, 1, far, (float) screen->width / screen->height);
 	param->input = input_new(&on_update, param, screen->win_ptr);
 	if (screen == NULL || param->camera == NULL || param->input == NULL)

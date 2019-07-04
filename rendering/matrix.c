@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 18:50:46 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 20:15:00 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,10 @@ t_vertex	*transform_vertex(t_matrix *matrix, t_vertex *vertex)
 	col4 = vertex_scale(matrix->w, vertex->w);
 	result = NULL;
 	if (col1 && col2 && col3 && col4)
+	{
 		result = vertex_sum_four(col1, col2, col3, col4);
+		result->color = vertex->color;
+	}
 	free(col1);
 	free(col2);
 	free(col3);

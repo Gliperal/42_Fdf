@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:48 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 18:53:13 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 19:43:28 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ typedef struct		s_vertex
 	float			y;
 	float			z;
 	float			w;
+	int				color;
 }					t_vertex;
 
 typedef t_vertex	t_vtx;
