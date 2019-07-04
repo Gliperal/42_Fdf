@@ -24,6 +24,6 @@ re: fclean all
 
 vertex.o: vertex.h
 quaternion.o: quaternion.h
-matrix.o: matrix.h vertex.h
+matrix.o: matrix.h vertex.h quaternion.h
 ft_draw_line.o: mlx_util.h
 camera.o: camera.h matrix.h

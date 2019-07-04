@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 11:33:26 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 17:02:05 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 19:19:44 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 static void	update_matrix(t_camera *camera)
 {
 	t_matrix *m_translate = translate_matrix(camera->position);
-	t_matrix *m_rotate = quaternion_to_matrix(camera->rotation);
+	t_matrix *m_rotate = rotation_matrix(camera->rotation);
 	t_matrix *m_proj = opengl_projection_matrix(camera->fov, camera->n, camera->f, camera->ar);
 	t_matrix *m_trtt = matrix_multiply(m_rotate, m_translate);
 	t_matrix *m_prtrtt = matrix_multiply(m_proj, m_trtt);
@@ -64,13 +64,11 @@ t_camera	*camera_new(float fov, float n, float f, float ar)
 
 void	camera_move(t_camera *camera, t_vertex *offset)
 {
-	camera = 0;
-	offset = 0;
-	// Rotate offset by camera angle
-	// Add to camera position
+	quaternion_rotate_vertex(camera->rotation, offset);
+	vertex_move(camera->position, offset);
 }
 
-void	camera_spin(t_camera *camera, int angle)
+void	camera_spin(t_camera *camera, float angle)
 {
 	t_quat rot;
 	float rad;
@@ -80,7 +78,7 @@ void	camera_spin(t_camera *camera, int angle)
 	rot.i = 0;
 	rot.j = 0;
 	rot.k = sin(rad);
-	quaternion_left_multiply(camera->rotation, &rot);
+	quaternion_right_multiply(camera->rotation, &rot);
 	camera->updated = 1;
 }
 
@@ -104,6 +102,6 @@ void	camera_rotate(t_camera *camera, t_point rotation)
 	rot.i = cosx * siny;
 	rot.j = sinx * cosy;
 	rot.k = sinx * siny;
-	quaternion_left_multiply(camera->rotation, &rot);
+	quaternion_right_multiply(camera->rotation, &rot);
 	camera->updated = 1;
 }

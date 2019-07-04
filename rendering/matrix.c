@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 15:53:16 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 18:50:46 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,36 @@ t_matrix	*translate_matrix(t_vertex *anti_offset)
 	cols[3]->w = 1;
 	t_matrix *m_translate = matrix_new(cols[0], cols[1], cols[2], cols[3]);
 	return (m_translate);
+}
+
+/*
+** Note that this rotation matrix is derived from the inverse of q (which
+** corresponds to the camera rotation).
+*/
+
+t_matrix	*rotation_matrix(t_quat *q)
+{
+	t_vertex	*cols[4];
+	t_matrix	*matrix;
+
+	cols[0] = vertex_new(1 - 2 * (q->j * q->j + q->k * q->k), 2 * \
+		(q->i * q->j - q->k * q->s), 2 * (q->i * q->k + q->j * q->s), 0);
+	cols[1] = vertex_new(2 * (q->i * q->j + q->k * q->s), 1 - 2 * \
+			(q->i * q->i + q->k * q->k), 2 * (q->j * q->k - q->i * q->s), 0);
+	cols[2] = vertex_new(2 * (q->i * q->k - q->j * q->s), 2 * \
+		(q->j * q->k + q->i * q->s), 1 - 2 * (q->i * q->i + q->j * q->j), 0);
+	cols[3] = vertex_new(0, 0, 0, 1);
+	matrix = matrix_new(cols[0], cols[1], cols[2], cols[3]);
+	if (!cols[0] || !cols[1] || !cols[2] || !cols[3] || !matrix)
+	{
+		free(cols[0]);
+		free(cols[1]);
+		free(cols[2]);
+		free(cols[3]);
+		free(matrix);
+		return (NULL);
+	}
+	return (matrix);
 }
 
 void	matrix_print(t_matrix *matrix)

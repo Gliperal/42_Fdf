@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 12:05:59 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 16:24:13 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 19:20:15 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct	s_camera
 t_vertex		*camera_vertex_to_clip(t_camera *camera, t_vertex *vertex);
 t_camera		*camera_new(float fov, float n, float f, float ar);
 void			camera_rotate(t_camera *camera, t_point rotation);
-void			camera_spin(t_camera *camera, int angle);
+void			camera_spin(t_camera *camera, float angle);
+void			camera_move(t_camera *camera, t_vertex *offset);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 22:22:18 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 18:39:12 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,27 +72,22 @@ void		quaternion_right_multiply(t_quat *q1, t_quat *q2)
 	q1->s = s;
 }
 
-t_matrix	*quaternion_to_matrix(t_quat *q)
+void	quaternion_rotate_vertex(t_quat *q, t_vertex *vertex)
 {
-	t_vertex	*cols[4];
-	t_matrix	*matrix;
+	t_quat	qi;
+	t_quat	v;
 
-	cols[0] = vertex_new(1 - 2 * (q->j * q->j + q->k * q->k), 2 * \
-		(q->i * q->j + q->k * q->s), 2 * (q->i * q->k - q->j * q->s), 0);
-	cols[1] = vertex_new(2 * (q->i * q->j - q->k * q->s), 1 - 2 * \
-			(q->i * q->i + q->k * q->k), 2 * (q->j * q->k + q->i * q->s), 0);
-	cols[2] = vertex_new(2 * (q->i * q->k + q->j * q->s), 2 * \
-		(q->j * q->k - q->i * q->s), 1 - 2 * (q->i * q->i + q->j * q->j), 0);
-	cols[3] = vertex_new(0, 0, 0, 1);
-	matrix = matrix_new(cols[0], cols[1], cols[2], cols[3]);
-	if (!cols[0] || !cols[1] || !cols[2] || !cols[3] || !matrix)
-	{
-		free(cols[0]);
-		free(cols[1]);
-		free(cols[2]);
-		free(cols[3]);
-		free(matrix);
-		return (NULL);
-	}
-	return (matrix);
+	qi.s = q->s;
+	qi.i = 0 - q->i;
+	qi.j = 0 - q->j;
+	qi.k = 0 - q->k;
+	v.s = 0;
+	v.i = vertex->x;
+	v.j = vertex->y;
+	v.k = vertex->z;
+	quaternion_left_multiply(&v, q);
+	quaternion_right_multiply(&v, &qi);
+	vertex->x = v.i;
+	vertex->y = v.j;
+	vertex->z = v.k;
 }
