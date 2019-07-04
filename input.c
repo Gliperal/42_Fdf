@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 13:39:46 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 12:34:14 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 13:59:22 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,13 @@ static int	handle_mouse_move(int x, int y, t_input *input)
 	return (0);
 }
 
+// TODO REMOVE
+#include <unistd.h>
+
 static int	handle_expose(t_input *input)
 {
 	// TODO force redraw
+	write(1, "expose\n", 7);
 	send_update(input);
 	return (0);
 }

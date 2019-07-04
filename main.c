@@ -6,12 +6,13 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 13:52:50 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 15:30:53 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "mlx.h"
 #include "rendering/mlx_util.h"
@@ -212,6 +213,7 @@ void	render(t_param *param)
 	t_vertex	*pos;
 	t_quat		*rot;
 	char		*cam_str;
+	char		*fps_str;
 
 	if (param->camera->updated)
 		redraw(param);
@@ -223,8 +225,11 @@ void	render(t_param *param)
 	cam_str = ft_strprintf("Camera: %+.2f, %+.2f, %+.2f \
 			(%+.2f + %+.2fi + %+.2fj + %+.2fk)", \
 			pos->x, pos->y, pos->z, rot->s, rot->i, rot->j, rot->k);
+	fps_str = ft_strprintf("FPS: %5.2f\n", param->fps);
 	mlx_string_put(screen->mlx_ptr, screen->win_ptr, 0, 0, 0xFFFFFF, cam_str);
+	mlx_string_put(screen->mlx_ptr, screen->win_ptr, 0, 20, 0xFFFFFF, fps_str);
 	free(cam_str);
+	free(fps_str);
 }
 
 /*
@@ -272,6 +277,49 @@ const t_vertex	g_vertex_down = {0, 1, 0, 0, 0};
 const t_vertex	g_vertex_back = {0, 0, -1, 0, 0};
 const t_vertex	g_vertex_front = {0, 0, 1, 0, 0};
 
+static const long	g_update_interval = 16666666L;
+
+static long	time_subtract(struct timespec a, struct timespec b)
+{
+	return ((a.tv_sec - b.tv_sec) * 1000000000L + a.tv_nsec - b.tv_nsec);
+}
+
+static struct timespec	time_add(struct timespec t, long n)
+{
+	t.tv_nsec += n;
+	while (t.tv_nsec < 0)
+	{
+		t.tv_sec--;
+		t.tv_nsec += 1000000000L;
+	}
+	while (t.tv_nsec > 1000000000L)
+	{
+		t.tv_sec++;
+		t.tv_nsec -= 1000000000L;
+	}
+	return t;
+}
+
+static int	handle_loop(t_param *param)
+{
+	struct timespec	time;
+	long			diff;
+
+	clock_gettime(CLOCK_REALTIME, &time);
+	diff = time_subtract(time, param->next_update_at);
+	if (diff > 0)
+	{
+		render(param);
+		param->fps = (float) 1000000000L / time_subtract(param->next_update_at, param->last_update_at);
+		param->last_update_at = param->next_update_at;
+		if (diff > g_update_interval)
+			param->next_update_at = time;
+		else
+			param->next_update_at = time_add(param->next_update_at, g_update_interval);
+	}
+	return (0);
+}
+
 void	on_update(void *p)
 {
 	t_param *param;
@@ -291,7 +339,7 @@ void	on_update(void *p)
 		camera_move(param->camera, &g_vertex_up);
 	if (param->input->button_states[RCLICK] == HELD)
 		ft_printf("Right mouse dragged %d,%d\n", param->input->mouse_moved.x, param->input->mouse_moved.y);
-	render(param);
+	handle_loop(param);
 }
 
 void	fdf(t_map *map)
@@ -315,7 +363,9 @@ void	fdf(t_map *map)
 	param->camera->position->y = map->height / 2;
 	param->screen = screen;
 	param->world = map;
+	clock_gettime(CLOCK_REALTIME, &param->next_update_at);
 	render(param);
 //	mlx_do_key_autorepeatoff(screen->mlx_ptr);
+	mlx_loop_hook(screen->mlx_ptr, &handle_loop, param);
 	mlx_loop(screen->mlx_ptr);
 }
