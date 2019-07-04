@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 16:17:49 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 16:56:10 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,6 +192,10 @@ void	on_update(void *p)
 		exit(0);
 	if (param->input->button_states[LCLICK] == HELD)
 		camera_rotate(param->camera, param->input->mouse_moved);
+	if (param->input->button_states[KEY_E] == PRESSED)
+		camera_spin(param->camera, 1);
+	if (param->input->button_states[KEY_Q] == PRESSED)
+		camera_spin(param->camera, -1);
 	if (param->input->button_states[RCLICK] == HELD)
 		ft_printf("Right mouse dragged %d,%d\n", param->input->mouse_moved.x, param->input->mouse_moved.y);
 	render(param);

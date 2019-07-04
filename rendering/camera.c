@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 11:33:26 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 16:16:50 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/03 17:02:05 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,20 @@ void	camera_move(t_camera *camera, t_vertex *offset)
 	// Add to camera position
 }
 
+void	camera_spin(t_camera *camera, int angle)
+{
+	t_quat rot;
+	float rad;
+
+	rad = angle * (M_PI / 180);
+	rot.s = cos(rad);
+	rot.i = 0;
+	rot.j = 0;
+	rot.k = sin(rad);
+	quaternion_left_multiply(camera->rotation, &rot);
+	camera->updated = 1;
+}
+
 void	camera_rotate(t_camera *camera, t_point rotation)
 {
 	t_quat rot;
@@ -80,7 +94,6 @@ void	camera_rotate(t_camera *camera, t_point rotation)
 	float cosy;
 	float siny;
 
-	camera->updated = 1;
 	angx = (float) rotation.x / 10 * (M_PI / 180);
 	angy = (float) (0 - rotation.y) / 10 * (M_PI / 180);
 	cosx = cos(angx);
@@ -92,4 +105,5 @@ void	camera_rotate(t_camera *camera, t_point rotation)
 	rot.j = sinx * cosy;
 	rot.k = sinx * siny;
 	quaternion_left_multiply(camera->rotation, &rot);
+	camera->updated = 1;
 }
