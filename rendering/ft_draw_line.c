@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/02 16:09:11 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 22:46:38 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 23:17:24 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,18 +22,12 @@ static void	screen_put(t_screen *screen, int x, int y, int color)
 		return ;
 	if (y < 0 || y >= screen->height)
 		return ;
-	// TODO Maybe change screen->data to integer array
 	offset = (screen->width * y + x) * screen->bpp / 8;
 	screen->data[offset] = color & 0xff;
 	screen->data[offset + 1] = (color >> 8) & 0xff;
 	screen->data[offset + 2] = (color >> 16) & 0xff;
 	screen->data[offset + 3] = color >> 24;
 }
-
-//	astep = ((dst >> 24) - (src >> 24)) / steps;
-//	rstep = ((dst >> 16) & 255 - (src >> 16) & 255) / steps;
-//	gstep = ((dst >> 8) & 255 - (src >> 8) & 255) / steps;
-//	bstep = (dst & 255 - src & 255) / steps;
 
 static int	inbetween_color(int c1, int c2, int n, int d)
 {
@@ -77,8 +71,8 @@ static void	draw_hline(t_screen *screen, t_cpoint src, t_cpoint dst)
 			m -= xdiff;
 			src.y += ydir;
 		}
-		screen_put(screen, src.x, src.y, inbetween_color(dst.color, src.color, dst.x - src.x, xdiff));
-//		screen_put(screen, src.x, src.y, src.color);
+		screen_put(screen, src.x, src.y, inbetween_color(\
+					dst.color, src.color, dst.x - src.x, xdiff));
 		src.x++;
 	}
 }
@@ -102,8 +96,8 @@ static void	draw_vline(t_screen *screen, t_cpoint src, t_cpoint dst)
 			m -= ydiff;
 			src.x += xdir;
 		}
-		screen_put(screen, src.x, src.y, inbetween_color(dst.color, src.color, dst.y - src.y, ydiff));
-//		screen_put(screen, src.x, src.y, src.color);
+		screen_put(screen, src.x, src.y, inbetween_color(\
+					dst.color, src.color, dst.y - src.y, ydiff));
 		src.y++;
 	}
 }

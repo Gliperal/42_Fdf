@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 18:07:03 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 23:12:55 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,7 @@ t_matrix		*scale_matrix(float scale)
 	return (NULL);
 }
 
-t_matrix		*identity_matrix()
+t_matrix		*identity_matrix(void)
 {
 	return (scale_matrix(1));
 }

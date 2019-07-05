@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 22:58:04 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 23:11:51 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	color_scale(int color, float scale)
 	return (alpha << 24) | (red << 16) | (green << 8) | blue;
 }
 
-t_vertex	*clip_vertex_to_screen(t_vertex *clip, int s_width, int s_height, int fog)
+t_vertex	*clip_to_screen(t_vertex *clip, int s_width, int s_height, int fog)
 {
 	float		ndc_x;
 	float		ndc_y;
@@ -84,7 +84,8 @@ t_vertex	*clip_vertex_to_screen(t_vertex *clip, int s_width, int s_height, int f
 	ndc_x = clip->x / clip->w;
 	ndc_y = clip->y / clip->w;
 	ndc_z = clip->z / clip->w;
-	if (ndc_x < -1.5 || ndc_x > 1.5 || ndc_y < -1.5 || ndc_y > 1.5 || ndc_z < -1 || ndc_z > 1)
+	if (ndc_x < -1.5 || ndc_x > 1.5 || ndc_y < -1.5 || \
+			ndc_y > 1.5 || ndc_z < -1 || ndc_z > 1)
 		return (NULL);
 	v = vertex_new(\
 			(ndc_x + 1) * s_width / 2, \
@@ -126,7 +127,7 @@ t_map	*transform_map_to_screen(t_param *param)
 			new->data[y][x] = camera_vertex_to_clip(param->camera, \
 					param->world->data[y][x]);
 			old = new->data[y][x];
-			new->data[y][x] = clip_vertex_to_screen(new->data[y][x], \
+			new->data[y][x] = clip_to_screen(new->data[y][x], \
 					param->screen->width, param->screen->height, param->fog);
 			free(old);
 			x++;
@@ -175,34 +176,29 @@ static void	put_edges_to_screen(t_map *map, t_screen *screen, int x, int y)
 	}
 }
 
-void	put_map_to_screen(t_map *map, t_screen *screen)
-{
-	int x;
-	int y;
-
-	ft_bzero(screen->data, screen->width * screen->height * screen->bpp / 8);
-	y = 0;
-	while (y < map->height)
-	{
-		x = 0;
-		while (x < map->width)
-		{
-			put_edges_to_screen(map, screen, x, y);
-			x++;
-		}
-		y++;
-	}
-}
-
 void	redraw(t_param *param)
 {
-	t_map	*transformed;
-	t_point	screen_size;
+	t_map		*transformed;
+	t_point		screen_size;
+	int			x;
+	int			y;
 
 	screen_size.x = param->screen->width;
 	screen_size.y = param->screen->height;
 	transformed = transform_map_to_screen(param);
-	put_map_to_screen(transformed, param->screen); // TODO the whole function can fit here
+	ft_bzero(param->screen->data, param->screen->width * \
+			param->screen->height * param->screen->bpp / 8);
+	y = 0;
+	while (y < transformed->height)
+	{
+		x = 0;
+		while (x < transformed->width)
+		{
+			put_edges_to_screen(transformed, param->screen, x, y);
+			x++;
+		}
+		y++;
+	}
 	free_map(transformed);
 }
 
@@ -324,7 +320,8 @@ static void	on_update(void *p)
 	if (key_down(param->input, ARROW_DOWN))
 		camera_rotate(param->camera, g_rot_down, rspeed);
 	if (button_down(param->input, LCLICK))
-		camera_rotate_screen(param->camera, param->input->mouse_moved, param->screen);
+		camera_rotate_screen(param->camera, param->input->mouse_moved, \
+				param->screen);
 	if (key_down(param->input, MINUS))
 	{
 		param->world->z_scale *= 0.95;
@@ -361,7 +358,8 @@ void	fdf(t_map *map)
 	if (param == NULL)
 		do_exit("Param creation failed. Exiting...", 1);
 	screen = new_screen(1280, 720, "Hello world!");
-	far = ft_max(42, ft_max(ft_max(map->width, map->height), map->max - map->min) * 2);
+	far = ft_max(ft_max(map->width, map->height), map->max - map->min) * 2;
+	far = ft_max(42, far);
 	aspect_ratio = (float)screen->width / screen->height;
 	param->camera = camera_new(60, 1, far, aspect_ratio);
 	param->input = input_new(&on_update, param, screen);

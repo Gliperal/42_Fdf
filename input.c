@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 13:39:46 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 22:56:25 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 23:03:02 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ static void	send_update(t_input *input)
 	input->mouse_moved.y = 0;
 }
 
-# define UPDATE_INTERVAL 16666666L
-# define NSEC_IN_SEC 1000000000L
+#define UPDATE_INTERVAL 16666666L
+#define NSEC_IN_SEC 1000000000L
 
 static long	time_subtract(struct timespec a, struct timespec b)
 {
@@ -64,7 +64,7 @@ static struct timespec	time_add(struct timespec t, long n)
 		t.tv_sec++;
 		t.tv_nsec -= NSEC_IN_SEC;
 	}
-	return t;
+	return (t);
 }
 
 static int	handle_loop(t_input *input)
@@ -77,12 +77,14 @@ static int	handle_loop(t_input *input)
 	if (diff > 0)
 	{
 		send_update(input);
-		input->fps = (float) NSEC_IN_SEC / time_subtract(input->next_update_at, input->last_update_at);
+		input->fps = (float)NSEC_IN_SEC / \
+				time_subtract(input->next_update_at, input->last_update_at);
 		input->last_update_at = input->next_update_at;
 		if (diff > UPDATE_INTERVAL)
 			input->next_update_at = time;
 		else
-			input->next_update_at = time_add(input->next_update_at, UPDATE_INTERVAL);
+			input->next_update_at = time_add(input->next_update_at, \
+					UPDATE_INTERVAL);
 	}
 	return (0);
 }
@@ -190,7 +192,6 @@ t_input	*input_new(void (*on_update)(void *), void *param, t_screen *screen)
 	input->param = param;
 	input->exposed = 0;
 	clock_gettime(CLOCK_REALTIME, &input->next_update_at);
-//	mlx_do_key_autorepeatoff(screen->mlx_ptr);
 	mlx_hook(screen->win_ptr, 2, 0, &handle_key_press, input);
 	mlx_hook(screen->win_ptr, 3, 0, &handle_key_release, input);
 	mlx_hook(screen->win_ptr, 4, 0, &handle_mouse_press, input);

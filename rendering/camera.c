@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 11:33:26 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 18:00:37 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 23:14:15 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ t_camera	*camera_new(float fov, float n, float f, float ar)
 	camera->rotation = quaternion_new(1, 0, 0, 0);
 	camera->position = vertex_new(0, 0, -20, 0);
 	camera->pre_transformation = identity_matrix();
-	if (camera->rotation == NULL || camera->position == NULL || camera->pre_transformation == NULL)
+	if (camera->rotation == NULL || camera->position == NULL || \
+			camera->pre_transformation == NULL)
 	{
 		free(camera->pre_transformation);
 		free(camera->position);
@@ -127,15 +128,15 @@ void	camera_rotate(t_camera *camera, t_point rotation, float angle)
 	camera->updated = 1;
 }
 
-void	camera_rotate_screen(t_camera *camera, t_point rotation, t_screen *screen)
+void	camera_rotate_screen(t_camera *camera, t_point rotat, t_screen *screen)
 {
 	float	ang[2];
 	float	cosine[2];
 	float	sine[2];
 	t_quat	rot;
 
-	ang[0] = (float)(0 - rotation.x) / screen->width * camera->fov * (M_PI / 180);
-	ang[1] = (float)rotation.y / screen->width * camera->fov * (M_PI / 180);
+	ang[0] = (float)(0 - rotat.x) / screen->width * camera->fov * (M_PI / 180);
+	ang[1] = (float)rotat.y / screen->width * camera->fov * (M_PI / 180);
 	cosine[0] = cos(ang[0]);
 	cosine[1] = cos(ang[1]);
 	sine[0] = sin(ang[0]);
