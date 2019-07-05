@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 21:19:41 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 11:02:53 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 16:02:29 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # define MWHEELUP 5
 # define MWHEELRT 6
 # define MWHEELLF 7
+
+# define MAX_BUTTONS 7
 
 # define KEY_A 0
 # define KEY_S 1
@@ -98,10 +100,10 @@
 # define END 119
 # define PGDN 121
 
-# define LEFT 123
-# define RIGHT 124
-# define DOWN 125
-# define UP 126
+# define ARROW_LEFT 123
+# define ARROW_RIGHT 124
+# define ARROW_DOWN 125
+# define ARROW_UP 126
 
 # define CTRL 256
 # define SHIFT 257
@@ -114,7 +116,7 @@
 # define CAPSLOCK 272
 # define FN 279
 
-# define MAX_BUTTONS 279
+# define MAX_KEYS 279
 
 # define MLX void
 # define MLX_WIN void
