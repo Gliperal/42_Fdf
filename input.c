@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 13:39:46 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 18:12:40 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 22:56:25 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,25 @@
 static void	send_update(t_input *input)
 {
 	int key;
+	int button;
 
 	(*input->on_update)(input->param);
-	key = 0;
-	while (key < MAX_BUTTONS)
+	button = 0;
+	while (button < MAX_BUTTONS)
 	{
-		if (input->button_states[key] == PRESSED)
-			input->button_states[key] = HELD;
-		else if (input->button_states[key] == RELEASED)
-			input->button_states[key] = NOT_HELD;
+		if (input->button_states[button] == PRESSED)
+			input->button_states[button] = HELD;
+		else if (input->button_states[button] == RELEASED)
+			input->button_states[button] = NOT_HELD;
+		button++;
+	}
+	key = 0;
+	while (key < MAX_KEYS)
+	{
+		if (input->key_states[key] == PRESSED)
+			input->key_states[key] = HELD;
+		else if (input->key_states[key] == RELEASED)
+			input->key_states[key] = NOT_HELD;
 		key++;
 	}
 	input->mouse_moved.x = 0;

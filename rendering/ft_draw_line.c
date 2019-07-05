@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/02 16:09:11 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/03 21:17:14 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 22:46:38 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,29 @@ static void	screen_put(t_screen *screen, int x, int y, int color)
 //	gstep = ((dst >> 8) & 255 - (src >> 8) & 255) / steps;
 //	bstep = (dst & 255 - src & 255) / steps;
 
+static int	inbetween_color(int c1, int c2, int n, int d)
+{
+	int rgba1[4];
+	int rgba2[4];
+	int rgba3[4];
+
+	if (d == 0)
+		return (c1);
+	rgba1[0] = c1 >> 24;
+	rgba1[1] = (c1 >> 16) & 255;
+	rgba1[2] = (c1 >> 8) & 255;
+	rgba1[3] = c1 & 255;
+	rgba2[0] = c2 >> 24;
+	rgba2[1] = (c2 >> 16) & 255;
+	rgba2[2] = (c2 >> 8) & 255;
+	rgba2[3] = c2 & 255;
+	rgba3[0] = ((rgba1[0] * (d - n)) + (rgba2[0] * n)) / d;
+	rgba3[1] = ((rgba1[1] * (d - n)) + (rgba2[1] * n)) / d;
+	rgba3[2] = ((rgba1[2] * (d - n)) + (rgba2[2] * n)) / d;
+	rgba3[3] = ((rgba1[3] * (d - n)) + (rgba2[3] * n)) / d;
+	return ((rgba3[0] << 24) | (rgba3[1] << 16) | (rgba3[2] << 8) | rgba3[3]);
+}
+
 static void	draw_hline(t_screen *screen, t_cpoint src, t_cpoint dst)
 {
 	int	xdiff;
@@ -54,7 +77,8 @@ static void	draw_hline(t_screen *screen, t_cpoint src, t_cpoint dst)
 			m -= xdiff;
 			src.y += ydir;
 		}
-		screen_put(screen, src.x, src.y, src.color);
+		screen_put(screen, src.x, src.y, inbetween_color(dst.color, src.color, dst.x - src.x, xdiff));
+//		screen_put(screen, src.x, src.y, src.color);
 		src.x++;
 	}
 }
@@ -78,7 +102,8 @@ static void	draw_vline(t_screen *screen, t_cpoint src, t_cpoint dst)
 			m -= ydiff;
 			src.x += xdir;
 		}
-		screen_put(screen, src.x, src.y, src.color);
+		screen_put(screen, src.x, src.y, inbetween_color(dst.color, src.color, dst.y - src.y, ydiff));
+//		screen_put(screen, src.x, src.y, src.color);
 		src.y++;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 12:38:59 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 15:43:52 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 22:51:08 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ typedef struct	s_param
 	t_screen	*screen;
 	t_camera	*camera;
 	t_input		*input;
+	int			fog;
 }				t_param;
 
 #endif

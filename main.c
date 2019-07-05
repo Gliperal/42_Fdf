@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 18:23:18 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 22:58:04 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	color_scale(int color, float scale)
 	return (alpha << 24) | (red << 16) | (green << 8) | blue;
 }
 
-t_vertex	*clip_vertex_to_screen(t_vertex *clip, int s_width, int s_height)
+t_vertex	*clip_vertex_to_screen(t_vertex *clip, int s_width, int s_height, int fog)
 {
 	float		ndc_x;
 	float		ndc_y;
@@ -92,9 +92,9 @@ t_vertex	*clip_vertex_to_screen(t_vertex *clip, int s_width, int s_height)
 			0, 0);
 	if (v == NULL)
 		return (NULL);
-//	if (ndc_z > 0.90)
-//		v->color = color_scale(clip->color, 10 - 10 * ndc_z);
-//	else
+	if (fog && ndc_z > 0.90)
+		v->color = color_scale(clip->color, 10 - 10 * ndc_z);
+	else
 		v->color = clip->color;
 	return (v);
 }
@@ -127,7 +127,7 @@ t_map	*transform_map_to_screen(t_param *param)
 					param->world->data[y][x]);
 			old = new->data[y][x];
 			new->data[y][x] = clip_vertex_to_screen(new->data[y][x], \
-					param->screen->width, param->screen->height);
+					param->screen->width, param->screen->height, param->fog);
 			free(old);
 			x++;
 		}
@@ -337,6 +337,11 @@ static void	on_update(void *p)
 		param->camera->pre_transformation->z->z = param->world->z_scale;
 		param->camera->updated = 1;
 	}
+	if (param->input->key_states[KEY_F] == PRESSED)
+	{
+		param->fog ^= 1;
+		param->camera->updated = 1;
+	}
 	if (param->input->exposed)
 	{
 		param->camera->updated = 1;
@@ -367,5 +372,6 @@ void	fdf(t_map *map)
 	param->camera->position->z = map->min - 10;
 	param->screen = screen;
 	param->world = map;
+	param->fog = 1;
 	mlx_loop(screen->mlx_ptr);
 }
