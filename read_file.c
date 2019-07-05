@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 20:36:57 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 13:07:59 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 18:09:25 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,32 +92,30 @@ const unsigned char g_max_color[3] = {0x22, 0x8B, 0x22};
 
 void	color_map(t_map *map)
 {
-	float min;
 	float mid;
-	float max;
 	unsigned int color[3];
 
-	min = 2147483647;
-	max = -2147483648;
+	map->min = 2147483647;
+	map->max = -2147483648;
 	for (int y = 0; y < map->height; y++)
 		for (int x = 0; x < map->width; x++)
 		{
-			if (map->data[y][x]->z < min)
-				min = map->data[y][x]->z;
-			if (map->data[y][x]->z > max)
-				max = map->data[y][x]->z;
+			if (map->data[y][x]->z < map->min)
+				map->min = map->data[y][x]->z;
+			if (map->data[y][x]->z > map->max)
+				map->max = map->data[y][x]->z;
 		}
-	mid = (min + max) / 2;
-	if (min == mid)
-		min -= 1;
-	if (max == mid)
-		max += 1;
+	mid = (map->min + map->max) / 2;
+	if (map->min == mid)
+		map->min -= 1;
+	if (map->max == mid)
+		map->max += 1;
 	for (int y = 0; y < map->height; y++)
 		for (int x = 0; x < map->width; x++)
 		{
 			if (map->data[y][x]->z < mid)
 			{
-				float dist = (map->data[y][x]->z - min) / (mid - min);
+				float dist = (map->data[y][x]->z - map->min) / (mid - map->min);
 				color[0] = dist * g_mid_color[0] + (1 - dist) * g_min_color[0];
 				color[1] = dist * g_mid_color[1] + (1 - dist) * g_min_color[1];
 				color[2] = dist * g_mid_color[2] + (1 - dist) * g_min_color[2];
@@ -125,7 +123,7 @@ void	color_map(t_map *map)
 			}
 			else
 			{
-				float dist = (map->data[y][x]->z - mid) / (max - mid);
+				float dist = (map->data[y][x]->z - mid) / (map->max - mid);
 				color[0] = dist * g_max_color[0] + (1 - dist) * g_mid_color[0];
 				color[1] = dist * g_max_color[1] + (1 - dist) * g_mid_color[1];
 				color[2] = dist * g_max_color[2] + (1 - dist) * g_mid_color[2];
@@ -145,6 +143,7 @@ t_map	*read_map(int fd)
 	map->width = 0;
 	map->height = 0;
 	map->data = NULL;
+	map->z_scale = 1;
 	while (1)
 	{
 		status = read_map_row(fd, map);

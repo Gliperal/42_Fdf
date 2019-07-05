@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 11:33:26 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 17:03:04 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 18:00:37 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,23 @@ static void	update_matrix(t_camera *camera)
 	t_matrix *m_translate;
 	t_matrix *m_rotate;
 	t_matrix *m_proj;
-	t_matrix *m_trtt;
-	t_matrix *m_prtrtt;
+	t_matrix *m_product[3];
 
 	m_translate = translate_matrix(camera->position);
 	m_rotate = rotation_matrix(camera->rotation);
 	m_proj = opengl_projection_matrix(camera->fov, \
 			camera->n, camera->f, camera->ar);
-	m_trtt = matrix_multiply(m_rotate, m_translate);
-	m_prtrtt = matrix_multiply(m_proj, m_trtt);
+	m_product[0] = matrix_multiply(m_translate, camera->pre_transformation);
+	m_product[1] = matrix_multiply(m_rotate, m_product[0]);
+	m_product[2] = matrix_multiply(m_proj, m_product[1]);
 	free(m_translate);
 	free(m_rotate);
 	free(m_proj);
-	free(m_trtt);
-	if (m_prtrtt != NULL)
-		camera->clip_matrix = m_prtrtt;
+	free(m_product[1]);
+	if (m_product[2] == NULL)
+		return ;
+	free(camera->clip_matrix);
+	camera->clip_matrix = m_product[2];
 }
 
 t_vertex	*camera_vertex_to_clip(t_camera *camera, t_vertex *vertex)
@@ -56,8 +58,10 @@ t_camera	*camera_new(float fov, float n, float f, float ar)
 		return (NULL);
 	camera->rotation = quaternion_new(1, 0, 0, 0);
 	camera->position = vertex_new(0, 0, -20, 0);
-	if (camera->rotation == NULL || camera->position == NULL)
+	camera->pre_transformation = identity_matrix();
+	if (camera->rotation == NULL || camera->position == NULL || camera->pre_transformation == NULL)
 	{
+		free(camera->pre_transformation);
 		free(camera->position);
 		free(camera->rotation);
 		free(camera);
@@ -67,6 +71,7 @@ t_camera	*camera_new(float fov, float n, float f, float ar)
 	camera->n = n;
 	camera->f = f;
 	camera->ar = ar;
+	camera->clip_matrix = NULL;
 	camera->updated = 1;
 	return (camera);
 }

@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 13:39:46 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 15:59:46 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 18:12:40 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,13 +143,9 @@ static int	handle_mouse_move(int x, int y, t_input *input)
 	return (0);
 }
 
-// TODO REMOVE
-#include <unistd.h>
-
 static int	handle_expose(t_input *input)
 {
-	// TODO force redraw
-	write(1, "expose\n", 7);
+	input->exposed = 1;
 	handle_loop(input);
 	return (0);
 }
@@ -174,8 +170,15 @@ t_input	*input_new(void (*on_update)(void *), void *param, t_screen *screen)
 		input->button_states[i] = NOT_HELD;
 		i++;
 	}
+	i = 0;
+	while (i < MAX_KEYS + 1)
+	{
+		input->key_states[i] = NOT_HELD;
+		i++;
+	}
 	input->on_update = on_update;
 	input->param = param;
+	input->exposed = 0;
 	clock_gettime(CLOCK_REALTIME, &input->next_update_at);
 //	mlx_do_key_autorepeatoff(screen->mlx_ptr);
 	mlx_hook(screen->win_ptr, 2, 0, &handle_key_press, input);

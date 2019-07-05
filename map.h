@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 20:40:16 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/02 21:24:24 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 18:02:12 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,9 @@ typedef struct	s_map
 	int			width;
 	int			height;
 	t_vertex	***data;
+	float		min;
+	float		max;
+	float		z_scale;
 }				t_map;
 
 #endif

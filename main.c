@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 17:01:44 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 18:12:21 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,9 +92,9 @@ t_vertex	*clip_vertex_to_screen(t_vertex *clip, int s_width, int s_height)
 			0, 0);
 	if (v == NULL)
 		return (NULL);
-	if (ndc_z > 0.90)
-		v->color = color_scale(clip->color, 10 - 10 * ndc_z);
-	else
+//	if (ndc_z > 0.90)
+//		v->color = color_scale(clip->color, 10 - 10 * ndc_z);
+//	else
 		v->color = clip->color;
 	return (v);
 }
@@ -325,8 +325,20 @@ static void	on_update(void *p)
 		camera_rotate(param->camera, g_rot_down, rspeed);
 	if (button_down(param->input, LCLICK))
 		camera_rotate_screen(param->camera, param->input->mouse_moved, param->screen);
-//	if (button_down(param->input, RCLICK))
-//		camera_move_screen(param->camera, param->input->mouse_moved);
+	if (key_down(param->input, MINUS))
+	{
+		param->world->z_scale *= 0.95;
+		param->camera->pre_transformation->z->z = param->world->z_scale;
+		param->camera->updated = 1;
+	}
+	if (key_down(param->input, PLUS))
+	{
+		param->world->z_scale *= 1.05;
+		param->camera->pre_transformation->z->z = param->world->z_scale;
+		param->camera->updated = 1;
+	}
+	if (param->input->exposed)
+		param->camera->updated = 1;
 	render(param);
 }
 
@@ -341,7 +353,7 @@ void	fdf(t_map *map)
 	if (param == NULL)
 		do_exit("Param creation failed. Exiting...", 1);
 	screen = new_screen(1280, 720, "Hello world!");
-	far = ft_max(42, ft_max(map->width, map->height) * 2);
+	far = ft_max(42, ft_max(ft_max(map->width, map->height), map->max - map->min) * 2);
 	aspect_ratio = (float)screen->width / screen->height;
 	param->camera = camera_new(60, 1, far, aspect_ratio);
 	param->input = input_new(&on_update, param, screen);
@@ -349,6 +361,7 @@ void	fdf(t_map *map)
 		do_exit("Things creation failed. Exiting...", 1);
 	param->camera->position->x = map->width / 2;
 	param->camera->position->y = map->height / 2;
+	param->camera->position->z = map->min - 10;
 	param->screen = screen;
 	param->world = map;
 	mlx_loop(screen->mlx_ptr);

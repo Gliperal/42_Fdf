@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 12:05:59 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 16:37:47 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 17:46:49 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct	s_camera
 	t_vertex	*position;
 	t_quat		*rotation;
 	t_matrix	*clip_matrix;
+	t_matrix	*pre_transformation;
 	int			updated;
 }				t_camera;
 

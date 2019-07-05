@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:48 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 10:58:38 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 18:07:21 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,7 @@ t_matrix		*translate_matrix(t_vertex *anti_offset);
 t_matrix		*rotation_matrix(t_quat *q);
 t_matrix		*opengl_projection_matrix(float fv, float n, float f, float a);
 void			matrix_print(t_matrix *matrix);
+t_matrix		*identity_matrix();
+t_matrix		*scale_matrix(float scale);
 
 #endif

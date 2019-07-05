@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 18:12:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 11:05:10 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 18:07:03 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,4 +195,29 @@ void	matrix_print(t_matrix *matrix)
 	ft_printf("[%7.2f %7.2f %7.2f %7.2f]\n", v1->y, v2->y, v3->y, v4->y);
 	ft_printf("[%7.2f %7.2f %7.2f %7.2f]\n", v1->z, v2->z, v3->z, v4->z);
 	ft_printf("[%7.2f %7.2f %7.2f %7.2f]\n", v1->w, v2->w, v3->w, v4->w);
+}
+
+t_matrix		*scale_matrix(float scale)
+{
+	t_vertex *cols[4];
+	t_matrix *m_identity;
+
+	cols[0] = vertex_new(scale, 0, 0, 0);
+	cols[1] = vertex_new(0, scale, 0, 0);
+	cols[2] = vertex_new(0, 0, scale, 0);
+	cols[3] = vertex_new(0, 0, 0, scale);
+	m_identity = matrix_new(cols[0], cols[1], cols[2], cols[3]);
+	if (cols[0] && cols[1] && cols[2] && cols[3] && m_identity)
+		return (m_identity);
+	free(cols[0]);
+	free(cols[1]);
+	free(cols[2]);
+	free(cols[3]);
+	free(m_identity);
+	return (NULL);
+}
+
+t_matrix		*identity_matrix()
+{
+	return (scale_matrix(1));
 }

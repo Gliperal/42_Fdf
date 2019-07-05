@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 13:57:37 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 15:57:11 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 18:12:46 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ typedef struct		s_input
 	struct timespec	last_update_at;
 	struct timespec	next_update_at;
 	float			fps;
+	int				exposed;
 	void			(*on_update)(void *);
 	void			*param;
 }					t_input;
