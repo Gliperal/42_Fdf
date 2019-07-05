@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 19:53:55 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 18:12:21 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/04 18:23:18 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -338,7 +338,10 @@ static void	on_update(void *p)
 		param->camera->updated = 1;
 	}
 	if (param->input->exposed)
+	{
 		param->camera->updated = 1;
+		param->input->exposed = 0;
+	}
 	render(param);
 }
 
