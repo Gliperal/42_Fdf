@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -Werror
 FRAMEWORKS=-framework OpenGL -framework AppKit
-SRC=fdf.c main.c read_file.c input.c
-OBJS=fdf.o main.o read_file.o input.o
+SRC=fdf.c render.c transform_map_to_screen.c map_read.c map_color.c input.c input_handle_loop.c input_handlers.c misc.c
+OBJS=fdf.o render.o transform_map_to_screen.o map_read.o map_color.o input.o input_handle_loop.o input_handlers.o misc.o
 LIBMLX=minilibx_macos
 LIBFT=libft
 LIBRENDERING=rendering
@@ -47,8 +47,11 @@ libs:
 	make -C $(LIBFT)
 	make -C $(LIBRENDERING)
 
-fdf.o: map.h
-read_file.o: map.h -lrendering -lft
-input.o: input.h -lrendering -lft
-main.o: main.c -lrendering
-	$(CC) $(CFLAGS) -I $(LIBMLX) -c main.c
+fdf.o: input.h param.h misc.h -lmlx
+map_read.o: map.h
+map_color.o: map.h
+input.o: input.h input_handlers.h -lmlx
+input_handle_loop.o: input.h
+render.o: param.h map.h -lft -lmlx
+transform_map_to_screen.o: map.h param.h -lrendering
+misc.o: input.h

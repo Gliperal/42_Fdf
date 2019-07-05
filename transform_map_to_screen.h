@@ -1,27 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   rendering.h                                        :+:      :+:    :+:   */
+/*   transform_map_to_screen.h                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/07/02 21:09:23 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/05 11:52:32 by nwhitlow         ###   ########.fr       */
+/*   Created: 2019/07/05 12:53:24 by nwhitlow          #+#    #+#             */
+/*   Updated: 2019/07/05 12:53:51 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef RENDERING_H
-# define RENDERING_H
+#ifndef TRANSFORM_MAP_TO_SCREEN_H
+# define TRANSFORM_MAP_TO_SCREEN_H
 
-# include "mlx_util.h"
-# include "../libft/libft.h"
-# include "quaternion.h"
-# include "vertex.h"
-# include "matrix.h"
-# include "camera.h"
-# include "cpoint.h"
-
-t_screen	*new_screen(int width, int height, char *title);
-void		ft_draw_line(t_screen *screen, t_cpoint src, t_cpoint dst);
+t_map	*transform_map_to_screen(t_param *param);
 
 #endif

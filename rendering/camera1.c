@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   camera.c                                           :+:      :+:    :+:   */
+/*   camera1.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 11:33:26 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 23:14:15 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/05 13:30:37 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,23 +77,23 @@ t_camera	*camera_new(float fov, float n, float f, float ar)
 	return (camera);
 }
 
-void	camera_move(t_camera *camera, const t_vertex *offset, float distance)
+void		camera_move(t_camera *camera, const t_vertex *offset, float dist)
 {
 	t_vertex *rotated_offset;
 
 	rotated_offset = quaternion_rotate_vertex(camera->rotation, offset);
 	if (rotated_offset != NULL)
 	{
-		rotated_offset->x *= distance;
-		rotated_offset->y *= distance;
-		rotated_offset->z *= distance;
+		rotated_offset->x *= dist;
+		rotated_offset->y *= dist;
+		rotated_offset->z *= dist;
 		vertex_move(camera->position, rotated_offset);
 		free(rotated_offset);
 		camera->updated = 1;
 	}
 }
 
-void	camera_spin(t_camera *camera, float angle)
+void		camera_spin(t_camera *camera, float angle)
 {
 	t_quat	rot;
 	float	rad;
@@ -103,48 +103,6 @@ void	camera_spin(t_camera *camera, float angle)
 	rot.i = 0;
 	rot.j = 0;
 	rot.k = sin(rad);
-	quaternion_right_multiply(camera->rotation, &rot);
-	camera->updated = 1;
-}
-
-void	camera_rotate(t_camera *camera, t_point rotation, float angle)
-{
-	float	ang[2];
-	float	cosine[2];
-	float	sine[2];
-	t_quat	rot;
-
-	ang[0] = (float)rotation.x * angle * (M_PI / 180);
-	ang[1] = (float)rotation.y * angle * (M_PI / 180);
-	cosine[0] = cos(ang[0]);
-	cosine[1] = cos(ang[1]);
-	sine[0] = sin(ang[0]);
-	sine[1] = sin(ang[1]);
-	rot.s = cosine[0] * cosine[1];
-	rot.i = cosine[0] * sine[1];
-	rot.j = sine[0] * cosine[1];
-	rot.k = sine[0] * sine[1];
-	quaternion_right_multiply(camera->rotation, &rot);
-	camera->updated = 1;
-}
-
-void	camera_rotate_screen(t_camera *camera, t_point rotat, t_screen *screen)
-{
-	float	ang[2];
-	float	cosine[2];
-	float	sine[2];
-	t_quat	rot;
-
-	ang[0] = (float)(0 - rotat.x) / screen->width * camera->fov * (M_PI / 180);
-	ang[1] = (float)rotat.y / screen->width * camera->fov * (M_PI / 180);
-	cosine[0] = cos(ang[0]);
-	cosine[1] = cos(ang[1]);
-	sine[0] = sin(ang[0]);
-	sine[1] = sin(ang[1]);
-	rot.s = cosine[0] * cosine[1];
-	rot.i = cosine[0] * sine[1];
-	rot.j = sine[0] * cosine[1];
-	rot.k = sine[0] * sine[1];
 	quaternion_right_multiply(camera->rotation, &rot);
 	camera->updated = 1;
 }

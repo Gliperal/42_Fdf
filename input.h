@@ -6,7 +6,7 @@
 /*   By: nwhitlow <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 13:57:37 by nwhitlow          #+#    #+#             */
-/*   Updated: 2019/07/04 18:12:46 by nwhitlow         ###   ########.fr       */
+/*   Updated: 2019/07/05 13:16:29 by nwhitlow         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 
 # include "libft/libft.h"
 # include "rendering/mlx_util.h"
+
+# define UPDATE_INTERVAL 16666666L
+# define NSEC_IN_SEC 1000000000L
 
 typedef char		t_button_state;
 
@@ -41,5 +44,7 @@ typedef struct		s_input
 typedef	void		(*t_func)(void *);
 
 t_input				*input_new(t_func on_update, void *param, t_screen *screen);
+void				input_clock_init(t_input *input);
+int					input_handle_loop(t_input *input);
 
 #endif
